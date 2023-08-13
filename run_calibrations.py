@@ -43,7 +43,7 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int)
     parser.add_argument("--test_run", type=bool)
 
-    args = parser.parse_args()
+    args = paer.parse_args()
     llm_name = args.llm_name
     # initialize LLM
     llm = LLM(model=llm_name, tensor_parallel_size=args.gpus, trust_remote_code=True)
