@@ -40,13 +40,18 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--llm_name", type=str)
     parser.add_argument("--gpus", type=int)
-    parser.add_argument("--batch_size", type=int)
+    parser.add_argument("--max_batched_tokens", type=int)
     parser.add_argument("--test_run", type=bool)
 
-    args = paer.parse_args()
+    args = parser.parse_args()
+    assert args.llm_name in LLM_TEMPLATES.keys(), f"llm_name must be one of {LLM_TEMPLATES.keys()}"
+    assert 1<=args.gpus<=4, "gpus must be between 1 and 4"
+    assert 1<=args.max_batched_tokens<=100000, "max_batched_tokens must be between 1 and 100000"
+    assert args.test_run in [True, False], "test_run must be True or False"
+
     llm_name = args.llm_name
     # initialize LLM
-    llm = LLM(model=llm_name, tensor_parallel_size=args.gpus, trust_remote_code=True)
+    llm = LLM(model=llm_name, tensor_parallel_size=args.gpus, trust_remote_code=True, download_dir='./models-weights', max_num_batched_tokens=args.max_batched_tokens)
     sampling_params = SamplingParams(temperature=0, top_p=1, max_tokens=1)
     batch_size = 128
     temp = 0
