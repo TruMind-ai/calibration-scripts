@@ -111,7 +111,7 @@ if __name__ == "__main__":
         queries_collection = db[f'queries/{dim}/{llm_name}']
         debugprint(f"Loaded queries_collection successfully")
 
-        while cur_prompts: 
+        while True: 
             debugprint('Batch:', batch_num)
             # get batch of queries from mongoDB
             queries, cur_prompts = get_queries(n_queries=batch_size)
