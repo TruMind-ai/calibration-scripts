@@ -7,6 +7,7 @@ from vllm import LLM, SamplingParams
 import json
 import tqdm
 from llm_prompt_templates import *
+import time 
 
 llms = ['']
 
@@ -40,7 +41,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--llm_name", type=str)
     parser.add_argument("--gpus", type=int)
+    parser.add_argument("--temp", type=float, default=0.2)
+    parser.add_argument("--topp", type=float, default=1)
     parser.add_argument("--test_run", type=bool)
+    parser.add_argument("--max_gen", type=int, default=float('inf'))
+
 
     args = parser.parse_args()
     assert args.llm_name in LLM_TEMPLATES.keys(), f"llm_name must be one of {LLM_TEMPLATES.keys()}"
@@ -50,36 +55,49 @@ if __name__ == "__main__":
     llm_name = args.llm_name
     # initialize LLM
     llm = LLM(model=llm_name, tensor_parallel_size=args.gpus, trust_remote_code=True, download_dir='./models-weights')
-    sampling_params = SamplingParams(temperature=0, top_p=1, max_tokens=1)
+    sampling_params = SamplingParams(temperature=args.temp, top_p=args.topp, max_tokens=1)
     batch_size = 128
-    temp = 0
-
     # initialize dbs
     collection = None
 
-    with open('./test_prompts.json', 'r') as f:
-        prompts=json.load(f)
-    
-    while True: 
-        if args.test_run:
-            with open('./test_prompts.json', 'r') as f:
-                prompts = json.load(f)
-        else:
-            prompts = ['hello my name is ']
 
-        prompts = [LLM_TEMPLATES[llm_name].format(prompt=prompt) for prompt in prompts[:batch_size]]
+    if args.test_run:
+        with open('./test_prompts.json', 'r') as f:
+            print("Loading test prompts")
+            prompts = json.load(f)
+            print(f"Loaded {len(prompts)} prompts!")
+    else:
+        prompts = ['hello my name is ']
+    
+    prompts = prompts[:args.max_gen]
+    batch_num=0
+    start = time.time()
+    while True: 
         # Poll database for n queries in the 'ready' state
+        cur_prompts = prompts[batch_num*batch_size: (batch_num+1)*batch_size]
+        if not cur_prompts:
+            print("No more prompts to generate")
+            break
+        cur_prompts = [LLM_TEMPLATES[llm_name].format(prompt=prompt) for prompt in cur_prompts]
 		# If there are none, poll for queries in the 'defective' state
+
 	    # Format query in LLM prompt style
+
         # Add queries to list
+
         # call "generate" on the list
-        outputs = llm.generate(prompts, sampling_params)
-        for output in tqdm.tqdm(outputs):
-            generated_text = output.outputs[0].text
-            print(f"Generated text: {generated_text!r}")
+        outputs = llm.generate(cur_prompts, sampling_params, use_tqdm=True).outputs
+        print(f"Generated text: {[output.text for output in outputs]}")
 		#extract integer rating
-		#wait for all results
         
 		#collect timing stats
+
 		#update db listings with status="processed" and the value of the rating
-        pass
+        batch_num+=1
+
+    end = time.time()
+    print("Done! Overall timing stats: ")
+    print("LATENCY:", (start-end)/len(prompts))
+    print("THROUGHPUT:", len(prompts)/(start-end))
+    print("NUM_PROMPTS:", len(prompts))
+
