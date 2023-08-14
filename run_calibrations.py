@@ -44,8 +44,8 @@ if __name__ == "__main__":
     parser.add_argument("--temp", type=float, default=0.2)
     parser.add_argument("--topp", type=float, default=1)
     parser.add_argument("--max_gen", type=int, default=float('inf'))
-    parser.add_argument("--test-run-dir", type=str, default='./test_prompts.json')
-    parser.add_argument("--is-test-run", type=bool, default=True)
+    parser.add_argument("--test_run_dir", type=str, default='./test_prompts.json')
+    parser.add_argument("--is_test_run", type=bool, default=True)
 
 
     args = parser.parse_args()
@@ -62,8 +62,8 @@ if __name__ == "__main__":
     collection = None
 
 
-    if args.test_run:
-        with open('./test_prompts.json', 'r') as f:
+    if args.is_test_run:
+        with open(args.test_run_dir, 'r') as f:
             print("Loading test prompts")
             prompts = json.load(f)
             print(f"Loaded {len(prompts)} prompts!")
