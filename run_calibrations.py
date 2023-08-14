@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 load_dotenv('.env-db')
 from pymongo import MongoClient
+import random
 import os
 import argparse
 from vllm import LLM, SamplingParams
@@ -43,6 +44,7 @@ if __name__ == "__main__":
     parser.add_argument("--gpus", type=int)
     parser.add_argument("--temp", type=float, default=0.2)
     parser.add_argument("--topp", type=float, default=1)
+    parser.add_argument("--topk", type=int, default=10)
     parser.add_argument("--max_gen", type=int, default=float('inf'))
     parser.add_argument("--test_run_dir", type=str, default='./test_prompts.json')
     parser.add_argument("--is_test_run", type=bool, default=True)
@@ -51,12 +53,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
     assert args.llm_name in LLM_TEMPLATES.keys(), f"llm_name must be one of {LLM_TEMPLATES.keys()}"
     assert 1<=args.gpus<=4, "gpus must be between 1 and 4"
-    assert args.test_run in [True, False], "test_run must be True or False"
+    assert args.is_test_run in [True, False], "test_run must be True or False"
 
     llm_name = args.llm_name
     # initialize LLM
     llm = LLM(model=llm_name, tensor_parallel_size=args.gpus, trust_remote_code=True, download_dir='./models-weights')
-    sampling_params = SamplingParams(temperature=args.temp, top_p=args.topp, max_tokens=1)
+    sampling_params = SamplingParams(temperature=args.temp, top_k=args.topk, max_tokens=1)
     batch_size = 128
     # initialize dbs
     collection = None
@@ -66,6 +68,7 @@ if __name__ == "__main__":
         with open(args.test_run_dir, 'r') as f:
             print("Loading test prompts")
             prompts = json.load(f)
+            prompts = random.sample(prompts, len(prompts))
             print(f"Loaded {len(prompts)} prompts!")
     else:
         prompts = ['hello my name is ']
@@ -87,8 +90,8 @@ if __name__ == "__main__":
         # Add queries to list
 
         # call "generate" on the list
-        outputs = llm.generate(cur_prompts, sampling_params, use_tqdm=True).output
-        print(f"Generated text: {[output.text for output in outputs]}")
+        outputs = llm.generate(cur_prompts, sampling_params, use_tqdm=True)
+        print(f"Generated text: {[output.outputs[0].text for output in outputs]}")
 		#extract integer rating
         
 		#collect timing stats
@@ -98,7 +101,7 @@ if __name__ == "__main__":
 
     end = time.time()
     print("Done! Overall timing stats: ")
-    print("LATENCY:", (start-end)/len(prompts))
-    print("THROUGHPUT:", len(prompts)/(start-end))
+    print("LATENCY:", (end-start)/len(prompts))
+    print("THROUGHPUT:", len(prompts)/(end-start))
     print("NUM_PROMPTS:", len(prompts))
 
