@@ -64,10 +64,9 @@ if __name__ == "__main__":
     parser.add_argument("--test_run_dir", type=str, default='./test_prompts.json')
     parser.add_argument("--is_test_run", type=bool, default=False)
     parser.add_argument('--debug', type=bool, default=False)
+    parser.add_argument('--batch_size', type=int, default=3000)
     parser.add_argument('-d','--dimension', action='append', help='<Required> Set flag', required=True)
 
-
-    
 
     args = parser.parse_args()
     
@@ -82,7 +81,7 @@ if __name__ == "__main__":
 
     # initialize LLM
     llm = LLM(model=llm_name, tensor_parallel_size=args.gpus, trust_remote_code=True, download_dir='./models-weights', 
-              max_num_batched_tokens=3100, swap_space=16)
+              max_num_batched_tokens=3600, swap_space=16)
     sampling_params = SamplingParams(temperature=args.temp, max_tokens=1)
 
     # if args.is_test_run:
@@ -93,7 +92,7 @@ if __name__ == "__main__":
     #         print(f"Loaded {len(prompts)} prompts!")
     
     # prompts = prompts[:min(args.max_gen, len(prompts))]
-    batch_size = 3000
+    batch_size = args.batch_size
     debugprint(f"Batch size: {batch_size}")
     batch_num=0
 
@@ -142,6 +141,9 @@ if __name__ == "__main__":
             #collect timing stats
             #update db listings with the value of the rating
             for i, query in enumerate(queries):
+                if query['_id'] not in ratings:
+                    print("Error: query id not in ratings")
+                    continue
                 query['rating'] = ratings[query['_id']]
                 query['num_tries'] += 1
                 query['latency'] = (time.time()-start)/batch_size
