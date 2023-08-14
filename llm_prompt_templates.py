@@ -1,9 +1,9 @@
-DEFAULT_TEMPLATE = '{prompt} Output the rating as an integer. ASSISTANT: Rating: '
-CHAT_TEMPLATE = '{prompt} \nEND OF SAMPLE. Now, the rating as an integer from 1-10:'
-GUANACO_TEMPLATE = "A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions. ### Human: {prompt} ### Assistant:"
-ORCA_TEMPLATE = '<|system|>You are an AI assistant that follows instruction extremely well. Help as much as you can.</s><|prompter|>{prompt}</s><|assistant|>Rating: '
-OPENCHAT_TEMPLATE = "GPT4 User: {prompt}<|end_of_turn|>GPT4 Assistant: Rating: "
-VICUNA_TEMPLATE = 'User: {prompt} Assistant: Rating: '
+DEFAULT_TEMPLATE = '{prompt} Output the rating as an integer. ASSISTANT: Rating:\n'
+CHAT_TEMPLATE = '{prompt} \nEND OF SAMPLE. Now, the rating as an integer from 1-10:\n'
+GUANACO_TEMPLATE = "A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions. ### Human: {prompt} ### Assistant: Rating:\n"
+ORCA_TEMPLATE = '<|system|>You are an AI assistant that follows instruction extremely well. Help as much as you can.</s><|prompter|>{prompt}</s><|assistant|>Rating:\n'
+OPENCHAT_TEMPLATE = "GPT4 User: {prompt}<|end_of_turn|>GPT4 Assistant: Rating:\n"
+VICUNA_TEMPLATE = 'User: {prompt} Assistant: Rating:\n'
 LLM_TEMPLATES = {
     'ai21-j2-mid': CHAT_TEMPLATE,
     'gpt-3.5-turbo': CHAT_TEMPLATE,
