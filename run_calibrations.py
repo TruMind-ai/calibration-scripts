@@ -34,9 +34,12 @@ def get_queries(query_collection: Collection, n_queries=25000, ):
     num_tries = 0
     # get n queries from the query collection
     while len(queries) < n_queries and num_tries < 3:
-        queries.append(query_collection.find_one_and_update({'rating':-1, 'num_tries':num_tries},
-                                                                    {'$set':{'rating':0}}))
-        num_tries += 1
+        q = query_collection.find_one_and_update({'rating':-1, 'num_tries':num_tries},
+                                                                    {'$set':{'rating':0}})
+        if q is None:
+            num_tries += 1
+            continue
+        queries.append(q)
     # format into prompts
     prompt_list = []
     for query in queries:
