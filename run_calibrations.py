@@ -95,7 +95,6 @@ if __name__ == "__main__":
     batch_size = 3000
     debugprint(f"Batch size: {batch_size}")
     batch_num=0
-    start = time.time()
 
     # Poll database for n queries in the 'ready' state
 
@@ -111,6 +110,7 @@ if __name__ == "__main__":
 
         query_collection = db[f'queries/{dim}/{llm_name}']
         debugprint(f"Loaded query_collection successfully")
+        start = time.time()
 
         while True: 
             debugprint('Batch:', batch_num)
