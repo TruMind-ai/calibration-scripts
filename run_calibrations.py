@@ -111,8 +111,9 @@ if __name__ == "__main__":
         query_collection = db[f'queries/{dim}/{llm_name}']
         debugprint(f"Loaded query_collection successfully")
         start = time.time()
-
         while True: 
+            batch_start = time.time()
+
             debugprint('Batch:', batch_num)
             # get batch of queries from mongoDB
             queries, cur_prompts_dict = get_queries(n_queries=batch_size)
@@ -146,10 +147,9 @@ if __name__ == "__main__":
                     continue
                 query['rating'] = ratings[query['_id']]
                 query['num_tries'] += 1
-                query['latency'] = (time.time()-start)/batch_size
+                query['latency'] = (time.time()-batch_start)/batch_size
                 query_collection.update_one({'_id':query['_id']}, {'$set':query})
             batch_num+=1
-
         end = time.time()
         print("Done! Overall timing stats: ")
         print("LATENCY:", (end-start)/len(prompts))
