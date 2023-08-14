@@ -4,7 +4,7 @@ from pymongo import MongoClient
 import random
 import os
 import argparse
-from vllm import LLM, SamplingParams
+# from vllm import LLM, SamplingParams
 from pymongo.collection import Collection
 import json
 import tqdm
@@ -41,13 +41,13 @@ def get_queries(n_queries=10000):
             continue
         queries.append(q)
     # format into prompts
-    prompt_list = []
+    prompt_dict = {}
     for query in queries:
         prefix = prefixes[query['prefix_index']]['prefix']
         prompt = prompts[query['prompt_index']]['combined_prompt']
         sample = samples[query['sample_index']]['sample']
-        prompt_list.append(f"{prefix}\n{prompt}\nSample:\n{sample}")
-    return queries, prompt_list
+        prompt_dict[f"{prefix}\n{prompt}\nSample:\n{sample}"] = query['_id']
+    return queries, prompt_dict
 
 if __name__ == "__main__":
     load_dotenv('.env-db')
@@ -115,32 +115,33 @@ if __name__ == "__main__":
         while True: 
             debugprint('Batch:', batch_num)
             # get batch of queries from mongoDB
-            queries, cur_prompts = get_queries(n_queries=batch_size)
+            queries, cur_prompts_dict = get_queries(n_queries=batch_size)
             debugprint(f"Loaded {len(queries)} queries successfully")
-            if not cur_prompts:
+            if not cur_prompts_dict:
                 print("No more prompts to generate")
                 break
-            # debugprint(f"Sample prompt: {cur_prompts[0]}")
+            # debugprint(f"Sample prompt: {cur_prompts_dict[0]}")
 
             # Format query in LLM prompt style
-            cur_prompts = [LLM_TEMPLATES[llm_name].format(prompt=prompt) for prompt in cur_prompts]
+            cur_prompts = [LLM_TEMPLATES[llm_name].format(prompt=prompt) for prompt in cur_prompts_dict.keys()]
             
             # call "generate" on the list
             outputs = llm.generate(cur_prompts, sampling_params, use_tqdm=True)
             #extract integer rating
-            ratings = []
+            ratings = {}
             for output in outputs:
+                query_id = cur_prompts_dict[output.prompt]
                 try:
-                    ratings.append(int(output.outputs[0].text))
+                    ratings[query_id] = int(output.outputs[0].text)
                 except:
-                    ratings.append(-1)
+                    ratings[query_id] = -1
 
-            debugprint(f"Sample Ratings: {ratings[-10:]}")
+            debugprint(f"Sample Ratings: {list(ratings.values())[-10:]}")
             
             #collect timing stats
             #update db listings with the value of the rating
             for i, query in enumerate(queries):
-                query['rating'] = ratings[i]
+                query['rating'] = ratings[query['_id']]
                 query['num_tries'] += 1
                 query['latency'] = (time.time()-start)/batch_size
                 query_collection.update_one({'_id':query['_id']}, {'$set':query})
