@@ -87,7 +87,7 @@ if __name__ == "__main__":
         # Add queries to list
 
         # call "generate" on the list
-        outputs = llm.generate(cur_prompts, sampling_params, use_tqdm=True).outputs
+        outputs = llm.generate(cur_prompts, sampling_params, use_tqdm=True).output
         print(f"Generated text: {[output.text for output in outputs]}")
 		#extract integer rating
         
