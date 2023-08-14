@@ -26,14 +26,14 @@ def get_database() -> MongoClient:
     # return database
     return client[DB_NAME]
 
-def get_queries(n_queries=25000):
+def get_queries(n_queries=10000):
     '''
     get n queries from the query collection
     '''
     queries = []
     num_tries = 0
     # get n queries from the query collection
-    while len(queries) < n_queries and num_tries < 3:
+    while len(queries) < n_queries and num_tries < 1:
         q = query_collection.find_one_and_update({'rating':-1, 'num_tries':num_tries},
                                                                     {'$set':{'rating':0}})
         if q is None:
@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     # initialize LLM
     llm = LLM(model=llm_name, tensor_parallel_size=args.gpus, trust_remote_code=True, download_dir='./models-weights', 
-              max_num_batched_tokens=3400, swap_space=128)
+              max_num_batched_tokens=3100, swap_space=16)
     sampling_params = SamplingParams(temperature=args.temp, max_tokens=1)
 
     # if args.is_test_run:
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     #         print(f"Loaded {len(prompts)} prompts!")
     
     # prompts = prompts[:min(args.max_gen, len(prompts))]
-    batch_size = 128
+    batch_size = 3000
     debugprint(f"Batch size: {batch_size}")
     batch_num=0
     start = time.time()
@@ -120,7 +120,7 @@ if __name__ == "__main__":
             if not cur_prompts:
                 print("No more prompts to generate")
                 break
-            debugprint(f"Sample prompt: {cur_prompts[0]}")
+            # debugprint(f"Sample prompt: {cur_prompts[0]}")
 
             # Format query in LLM prompt style
             cur_prompts = [LLM_TEMPLATES[llm_name].format(prompt=prompt) for prompt in cur_prompts]

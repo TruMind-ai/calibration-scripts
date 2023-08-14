@@ -1,4 +1,4 @@
-rating_suffix = ' Rating: Level '
+rating_suffix = 'Rating: Level '
 DEFAULT_TEMPLATE = '{prompt} Output the rating as an integer. ASSISTANT:' + rating_suffix
 CHAT_TEMPLATE = '{prompt} \nEND OF SAMPLE. Now, the rating as an integer from 1-10:\n'
 GUANACO_TEMPLATE = "A chat between a curious human and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions. ### Human: {prompt} ### Assistant:" + rating_suffix
