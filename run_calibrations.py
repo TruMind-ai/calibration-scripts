@@ -46,7 +46,8 @@ def get_queries(n_queries=10000):
         prefix = prefixes[query['prefix_index']]['prefix']
         prompt = prompts[query['prompt_index']]['combined_prompt']
         sample = samples[query['sample_index']]['sample']
-        prompt_dict[f"{prefix}\n{prompt}\nSample:\n{sample}"] = query['_id']
+        combined = f"{prefix}\n{prompt}\nSample:\n{sample}"
+        prompt_dict[LLM_TEMPLATES[llm_name].format(prompt=combined)] = query['_id']
     return queries, prompt_dict
 
 if __name__ == "__main__":
@@ -123,13 +124,13 @@ if __name__ == "__main__":
             # debugprint(f"Sample prompt: {cur_prompts_dict[0]}")
 
             # Format query in LLM prompt style
-            cur_prompts = [LLM_TEMPLATES[llm_name].format(prompt=prompt) for prompt in cur_prompts_dict.keys()]
+            cur_prompts = list(cur_prompts_dict.keys())
             
             # call "generate" on the list
-            outputs = llm.generate(cur_prompts, sampling_params, use_tqdm=True)
+            outputs = llm.generate(cur_prompts, sampling_params)
             #extract integer rating
             ratings = {}
-            for output in outputs:
+            for output in tqdm.tqdm(outputs):
                 query_id = cur_prompts_dict[output.prompt]
                 try:
                     ratings[query_id] = int(output.outputs[0].text)
