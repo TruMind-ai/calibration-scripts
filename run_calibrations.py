@@ -4,7 +4,7 @@ from pymongo import MongoClient
 import random
 import os
 import argparse
-# from vllm import LLM, SamplingParams
+from vllm import LLM, SamplingParams
 from pymongo.collection import Collection
 import json
 import tqdm
