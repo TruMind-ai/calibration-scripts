@@ -26,7 +26,7 @@ def get_database() -> MongoClient:
     # return database
     return client[DB_NAME]
 
-def get_queries(query_collection: Collection, n_queries=25000, ):
+def get_queries(n_queries=25000):
     '''
     get n queries from the query collection
     '''
@@ -108,8 +108,8 @@ if __name__ == "__main__":
         samples = {sample['sample_index']:sample for sample in list(db[f'samples/{dim}'].find({}))}
         debugprint(f"Loaded {len(samples)} samples successfully")
 
-        queries_collection = db[f'queries/{dim}/{llm_name}']
-        debugprint(f"Loaded queries_collection successfully")
+        query_collection = db[f'queries/{dim}/{llm_name}']
+        debugprint(f"Loaded query_collection successfully")
 
         while True: 
             debugprint('Batch:', batch_num)
@@ -142,7 +142,7 @@ if __name__ == "__main__":
                 query['rating'] = ratings[i]
                 query['num_tries'] += 1
                 query['latency'] = (time.time()-start)/batch_size
-                queries_collection.update_one({'_id':query['_id']}, {'$set':query})
+                query_collection.update_one({'_id':query['_id']}, {'$set':query})
             batch_num+=1
 
         end = time.time()
