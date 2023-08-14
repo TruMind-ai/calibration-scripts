@@ -5,12 +5,12 @@ import random
 import os
 import argparse
 from vllm import LLM, SamplingParams
+from pymongo.collection import Collection
 import json
 import tqdm
 from llm_prompt_templates import *
 import time 
 
-llms = ['']
 
 
 def get_database() -> MongoClient:
@@ -26,82 +26,124 @@ def get_database() -> MongoClient:
     # return database
     return client[DB_NAME]
 
-def get_query_collections(db: MongoClient):
-    collection_names = [f'calibration_queries/{llm}' for llm in llms]
-    return collection_names
-
-def get_output_collections():
-    collection_names = [f'calibration_outputs/{llm}' for llm in llms]
-    return collection_names
-
+def get_queries(query_collection: Collection, n_queries=25000, ):
+    '''
+    get n queries from the query collection
+    '''
+    queries = []
+    num_tries = 0
+    # get n queries from the query collection
+    while len(queries) < n_queries and num_tries < 3:
+        queries.append(query_collection.find_one_and_update({'rating':-1, 'num_tries':num_tries},
+                                                                    {'$set':{'rating':0}}))
+        num_tries += 1
+    # format into prompts
+    prompt_list = []
+    for query in queries:
+        prefix = prefixes[query['prefix_index']]['prefix']
+        prompt = prompts[query['prompt_index']]['combined_prompt']
+        sample = samples[query['sample_index']]['sample']
+        prompt_list.append(f"{prefix}\n{prompt}\nSample:\n{sample}")
+    return queries, prompt_list
 
 if __name__ == "__main__":
-
-    
+    load_dotenv('.env-db')
+    db = get_database()
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--llm_name", type=str)
     parser.add_argument("--gpus", type=int)
-    parser.add_argument("--temp", type=float, default=0.2)
+    parser.add_argument("--temp", type=float, default=1)
     parser.add_argument("--topp", type=float, default=1)
     parser.add_argument("--topk", type=int, default=10)
     parser.add_argument("--max_gen", type=int, default=float('inf'))
     parser.add_argument("--test_run_dir", type=str, default='./test_prompts.json')
-    parser.add_argument("--is_test_run", type=bool, default=True)
+    parser.add_argument("--is_test_run", type=bool, default=False)
+    parser.add_argument('--debug', type=bool, default=False)
+    parser.add_argument('-d','--dimension', action='append', help='<Required> Set flag', required=True)
 
+
+    
 
     args = parser.parse_args()
+    
+    debugprint = print if args.debug else lambda *x: None
+
     assert args.llm_name in LLM_TEMPLATES.keys(), f"llm_name must be one of {LLM_TEMPLATES.keys()}"
     assert 1<=args.gpus<=4, "gpus must be between 1 and 4"
     assert args.is_test_run in [True, False], "test_run must be True or False"
 
     llm_name = args.llm_name
+
+
     # initialize LLM
     llm = LLM(model=llm_name, tensor_parallel_size=args.gpus, trust_remote_code=True, download_dir='./models-weights')
-    sampling_params = SamplingParams(temperature=args.temp, top_k=args.topk, max_tokens=1)
-    batch_size = 128
-    # initialize dbs
-    collection = None
+    sampling_params = SamplingParams(temperature=args.temp, max_tokens=1)
 
-
-    if args.is_test_run:
-        with open(args.test_run_dir, 'r') as f:
-            print("Loading test prompts")
-            prompts = json.load(f)
-            prompts = random.sample(prompts, len(prompts))
-            print(f"Loaded {len(prompts)} prompts!")
-    else:
-        prompts = ['hello my name is ']
+    # if args.is_test_run:
+    #     with open(args.test_run_dir, 'r') as f:
+    #         print("Loading test prompts")
+    #         prompts = json.load(f)
+    #         prompts = random.sample(prompts, len(prompts))
+    #         print(f"Loaded {len(prompts)} prompts!")
     
-    prompts = prompts[:args.max_gen]
+    # prompts = prompts[:min(args.max_gen, len(prompts))]
+    batch_size = 128
+    debugprint(f"Batch size: {batch_size}")
     batch_num=0
     start = time.time()
-    while True: 
-        # Poll database for n queries in the 'ready' state
-        cur_prompts = prompts[batch_num*batch_size: (batch_num+1)*batch_size]
-        if not cur_prompts:
-            print("No more prompts to generate")
-            break
-        cur_prompts = [LLM_TEMPLATES[llm_name].format(prompt=prompt) for prompt in cur_prompts]
-		# If there are none, poll for queries in the 'defective' state
 
-	    # Format query in LLM prompt style
+    # Poll database for n queries in the 'ready' state
 
-        # Add queries to list
+    for dim in args.dimension:
+        prefixes = {prefix['prefix_index']:prefix for prefix in list(db['prefixes'].find({}))}
+        debugprint(f"Loaded {len(prefixes)} prefixes successfully")
 
-        # call "generate" on the list
-        outputs = llm.generate(cur_prompts, sampling_params, use_tqdm=True)
-        print(f"Generated text: {[output.outputs[0].text for output in outputs]}")
-		#extract integer rating
-        
-		#collect timing stats
+        prompts = {prompt['prompt_index']:prompt for prompt in list(db[f'core_prompts/{dim}'].find({}))}
+        debugprint(f"Loaded {len(prompts)} prompts successfully")
 
-		#update db listings with status="processed" and the value of the rating
-        batch_num+=1
+        samples = {sample['sample_index']:sample for sample in list(db[f'samples/{dim}'].find({}))}
+        debugprint(f"Loaded {len(samples)} samples successfully")
 
-    end = time.time()
-    print("Done! Overall timing stats: ")
-    print("LATENCY:", (end-start)/len(prompts))
-    print("THROUGHPUT:", len(prompts)/(end-start))
-    print("NUM_PROMPTS:", len(prompts))
+        queries_collection = db[f'queries/{dim}/{llm_name}']
+        debugprint(f"Loaded queries_collection successfully")
+
+        while cur_prompts: 
+            debugprint('Batch:', batch_num)
+            # get batch of queries from mongoDB
+            queries, cur_prompts = get_queries(n_queries=batch_size)
+            debugprint(f"Loaded {len(queries)} queries successfully")
+            if not cur_prompts:
+                print("No more prompts to generate")
+                break
+            debugprint(f"Sample prompt: {cur_prompts[0]}")
+
+            # Format query in LLM prompt style
+            cur_prompts = [LLM_TEMPLATES[llm_name].format(prompt=prompt) for prompt in cur_prompts]
+            
+            # call "generate" on the list
+            outputs = llm.generate(cur_prompts, sampling_params, use_tqdm=True)
+            #extract integer rating
+            ratings = []
+            for output in outputs:
+                try:
+                    ratings.append(int(output.outputs[0].text))
+                except:
+                    ratings.append(-1)
+
+            debugprint(f"Sample Ratings: {ratings[-10:]}")
+            
+            #collect timing stats
+            #update db listings with the value of the rating
+            for i, query in enumerate(queries):
+                query['rating'] = ratings[i]
+                query['num_tries'] += 1
+                queries_collection.update_one({'_id':query['_id']}, {'$set':query})
+            batch_num+=1
+
+        end = time.time()
+        print("Done! Overall timing stats: ")
+        print("LATENCY:", (end-start)/len(prompts))
+        print("THROUGHPUT:", len(prompts)/(end-start))
+        print("NUM_PROMPTS:", len(prompts))
 
