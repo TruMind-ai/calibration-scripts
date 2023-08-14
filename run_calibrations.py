@@ -141,6 +141,7 @@ if __name__ == "__main__":
             for i, query in enumerate(queries):
                 query['rating'] = ratings[i]
                 query['num_tries'] += 1
+                query['latency'] = (time.time()-start)/batch_size
                 queries_collection.update_one({'_id':query['_id']}, {'$set':query})
             batch_num+=1
 
