@@ -43,8 +43,9 @@ if __name__ == "__main__":
     parser.add_argument("--gpus", type=int)
     parser.add_argument("--temp", type=float, default=0.2)
     parser.add_argument("--topp", type=float, default=1)
-    parser.add_argument("--test_run", type=bool)
     parser.add_argument("--max_gen", type=int, default=float('inf'))
+    parser.add_argument("--test-run-dir", type=str, default='./test_prompts.json')
+    parser.add_argument("--is-test-run", type=bool, default=True)
 
 
     args = parser.parse_args()
