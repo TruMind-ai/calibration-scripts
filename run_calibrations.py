@@ -80,7 +80,8 @@ if __name__ == "__main__":
 
 
     # initialize LLM
-    llm = LLM(model=llm_name, tensor_parallel_size=args.gpus, trust_remote_code=True, download_dir='./models-weights')
+    llm = LLM(model=llm_name, tensor_parallel_size=args.gpus, trust_remote_code=True, download_dir='./models-weights', 
+              max_num_batched_tokens=3400, swap_space=128)
     sampling_params = SamplingParams(temperature=args.temp, max_tokens=1)
 
     # if args.is_test_run:
