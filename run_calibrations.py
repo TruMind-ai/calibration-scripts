@@ -43,13 +43,16 @@ def get_queries(n_queries=10000):
     queries, collection_name = response['queries'], response['collection_name']
     # format into prompts
     prompt_dict = {}
-    for query in queries:
-        query['_id'] = ObjectId(query['_id'])
-        prefix = prefixes[query['prefix_index']]['prefix']
-        prompt = prompts[query['prompt_index']]['combined_prompt']
-        sample = samples[query['sample_index']]['sample']
-        combined = f"{prefix}\n{prompt}\nSample:\n{sample}"
-        prompt_dict[LLM_TEMPLATES[llm_name].format(prompt=combined)] = query['_id']
+    try:
+        for query in queries:
+            query['_id'] = ObjectId(query['_id'])
+            prefix = prefixes[query['prefix_index']]['prefix']
+            prompt = prompts[query['prompt_index']]['combined_prompt']
+            sample = samples[query['sample_index']]['sample']
+            combined = f"{prefix}\n{prompt}\nSample:\n{sample}"
+            prompt_dict[LLM_TEMPLATES[llm_name].format(prompt=combined)] = query['_id']
+    except Exception as e:
+        send_cleanup_signal(queries, collection_name)
     return queries, prompt_dict, collection_name
 
 if __name__ == "__main__":
