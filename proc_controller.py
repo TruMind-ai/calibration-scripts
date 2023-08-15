@@ -84,7 +84,7 @@ async def chat(request: GetBatchParams, background_tasks: BackgroundTasks):
     queries = []
     coll = db[collection_name_f.format(dimension=CUR_DIMENSION, llm_name=request.llm_name)]
     print(coll.name)
-    if request.llm_name not in ratings_queue:
+    if request.llm_name not in ratings_queue or len(ratings_queue[request.llm_name]) == 0:
         ratings_queue[request.llm_name] = list(coll.find({'rating': -1}))
         ratings_queue[request.llm_name].sort(key=lambda x: -1*x['num_tries'])
 
@@ -98,6 +98,7 @@ async def chat(request: GetBatchParams, background_tasks: BackgroundTasks):
         except IndexError:
             print('No more queries to rate!')
             break
+    
     background_tasks.add_task(update_queries_to_processing_status, queries, coll)
     # return the sample id
     resp = GetBatchResponse(queries=queries, collection_name=coll.name)

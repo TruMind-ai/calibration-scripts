@@ -163,4 +163,4 @@ cython_debug/
 models-weights/
 model-weights/
 .env*
-.ipynb
+mongo_fixer.ipynb
