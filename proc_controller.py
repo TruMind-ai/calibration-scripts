@@ -56,7 +56,7 @@ def update_queries_to_processing_status(queries: list,  collection: Collection):
         return
     for query in queries:
         try:
-            query.update_one({'_id': query['_id']}, {'$set': {'rating': '0'}})
+            collection.update_one({'_id': query['_id']}, {'$set': {'rating': '0'}})
         except Exception as e:
             print('Error updating query to processing status!')
             print(e)
