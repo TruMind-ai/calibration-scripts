@@ -29,7 +29,7 @@ def send_cleanup_signal(queries: list, collection_name:str):
         return False
     return True
 
-def get_queries(n_queries=10000):
+def get_queries(n_queries=10000, samples={}, prompts={}, prefixes={}):
     # call calibration controller
     headers = {
             'Content-Type': 'application/json',
@@ -108,14 +108,14 @@ if __name__ == "__main__":
         # get batch of queries from controller
         try:
             if prompts == {} or samples == {}:
-                queries, cur_prompts_dict, collection_name = get_queries(n_queries=0)
+                _, _, collection_name = get_queries(n_queries=0)
                 prompts = {prompt['prompt_index']:prompt for prompt in list(db[collection_name].find({}))}
                 debugprint(f"Loaded {len(prompts)} prompts successfully")
                 samples = {sample['sample_index']:sample for sample in list(db[collection_name].find({}))}
                 debugprint(f"Loaded {len(samples)} samples successfully")
-            queries, cur_prompts_dict, collection_name = get_queries(n_queries=batch_size)
+            queries, cur_prompts_dict, collection_name = get_queries(n_queries=batch_size, samples=samples, prompts=prompts, prefixes=prefixes)
             debugprint(f"Loaded {len(queries)} queries successfully")
-            if not queries:
+            if not queries or len(queries) == 0:
                 print("No more queries to rate!!! Sleeping for 1 minute")
                 sleep(60)
 
