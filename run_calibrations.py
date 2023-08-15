@@ -14,6 +14,21 @@ from utils.utils import *
 import requests
 from bson import ObjectId
 from time import sleep
+
+
+def send_cleanup_signal(queries: list, collection_name:str):
+    # call calibration controller
+    headers = {
+            'Content-Type': 'application/json',
+        }
+    queries = [{i: str(query[i]) if isinstance(query[i], ObjectId) else query[i] for i in query} for query in queries]
+    data = json.dumps({'queries': queries, 'collection_name': collection_name})
+    response = requests.post(f'{proc_controller_url}/calibrations/cleanup', headers=headers, data=data)
+    if response.status_code != 200:
+        print(f"Error with cleanup: {response.status_code}")
+        return False
+    return True
+
 def get_queries(n_queries=10000):
     # call calibration controller
     headers = {
@@ -81,51 +96,54 @@ if __name__ == "__main__":
 
     samples = {}
     start = time.time()
-
+    
     while True: 
         batch_start = time.time()
         debugprint('Queries rated:', batch_num*batch_size)
         # get batch of queries from controller
-        if prompts == {} or samples == {}:
-            queries, cur_prompts_dict, collection_name = get_queries(n_queries=0)
-            prompts = {prompt['prompt_index']:prompt for prompt in list(db[collection_name].find({}))}
-            debugprint(f"Loaded {len(prompts)} prompts successfully")
-            samples = {sample['sample_index']:sample for sample in list(db[collection_name].find({}))}
-            debugprint(f"Loaded {len(samples)} samples successfully")
-        queries, cur_prompts_dict, collection_name = get_queries(n_queries=batch_size)
-        debugprint(f"Loaded {len(queries)} queries successfully")
-        if not queries:
-            print("No more queries to rate!!! Sleeping for 1 minute")
-            sleep(60)
+        try:
+            if prompts == {} or samples == {}:
+                queries, cur_prompts_dict, collection_name = get_queries(n_queries=0)
+                prompts = {prompt['prompt_index']:prompt for prompt in list(db[collection_name].find({}))}
+                debugprint(f"Loaded {len(prompts)} prompts successfully")
+                samples = {sample['sample_index']:sample for sample in list(db[collection_name].find({}))}
+                debugprint(f"Loaded {len(samples)} samples successfully")
+            queries, cur_prompts_dict, collection_name = get_queries(n_queries=batch_size)
+            debugprint(f"Loaded {len(queries)} queries successfully")
+            if not queries:
+                print("No more queries to rate!!! Sleeping for 1 minute")
+                sleep(60)
 
-        # Format query in LLM prompt style
-        cur_prompts = list(cur_prompts_dict.keys())
-        
-        # call "generate" on the list
-        outputs = llm.generate(cur_prompts, sampling_params)
-        #extract integer rating
-        ratings = {}
-        for output in tqdm.tqdm(outputs):
-            query_id = cur_prompts_dict[output.prompt]
-            try:
-                ratings[query_id] = int(output.outputs[0].text)
-            except:
-                ratings[query_id] = -1
+            # Format query in LLM prompt style
+            cur_prompts = list(cur_prompts_dict.keys())
+            
+            # call "generate" on the list
+            outputs = llm.generate(cur_prompts, sampling_params)
+            #extract integer rating
+            ratings = {}
+            for output in tqdm.tqdm(outputs):
+                query_id = cur_prompts_dict[output.prompt]
+                try:
+                    ratings[query_id] = int(output.outputs[0].text)
+                except:
+                    ratings[query_id] = -1
 
-        debugprint(f"Sample Ratings: {list(ratings.values())[-10:]}")
-        
-        #collect timing stats
-        #update db listings with the value of the rating
-        for i, query in enumerate(queries):
-            query['rating'] = -1
-            if query['_id'] in ratings:
-                query['rating'] = ratings[query['_id']]
-            else:
-                debugprint("Error: query id not in ratings!")
-            query['num_tries'] += 1
-            query['latency'] = (time.time()-batch_start)/batch_size
-            query_collection.update_one({'_id':query['_id']}, {'$set':query})
-        batch_num+=1
+            debugprint(f"Sample Ratings: {list(ratings.values())[-10:]}")
+            
+            #collect timing stats
+            #update db listings with the value of the rating
+            for i, query in enumerate(queries):
+                query['rating'] = -1
+                if query['_id'] in ratings:
+                    query['rating'] = ratings[query['_id']]
+                else:
+                    debugprint("Error: query id not in ratings!")
+                query['num_tries'] += 1
+                query['latency'] = (time.time()-batch_start)/batch_size
+                db[collection_name].update_one({'_id':query['_id']}, {'$set':query})
+            batch_num+=1
+        except Exception as e:
+            send_cleanup_signal(queries=queries, collection_name=collection_name)
     end = time.time()
     print("Done! Overall timing stats: ")
     print("LATENCY:", (end-start)/len(prompts))

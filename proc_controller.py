@@ -103,11 +103,11 @@ async def chat(request: GetBatchParams, background_tasks: BackgroundTasks):
     resp = GetBatchResponse(queries=queries, collection_name=coll.name)
     return resp
 
-@app.post('/calibrations/clean-up')
+@app.post('/calibrations/cleanup')
 async def clean_up(request: GetBatchResponse, background_tasks: BackgroundTasks):
     '''
     Clean up when calibration runner process fails
     '''
     coll = db[collection_name_f.format(dimension=CUR_DIMENSION, llm_name=request.llm_name)]
-    background_tasks.add_task(update_queries_to_processing_status, request.queries, coll)
+    background_tasks.add_task(revert_query_status, request.queries, coll)
     return {'status': 'reverting queries to ready status...'}
