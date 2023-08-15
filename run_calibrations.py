@@ -13,6 +13,7 @@ import time
 from utils.utils import *
 import requests
 from bson import ObjectId
+from time import sleep
 def get_queries(n_queries=10000):
     # call calibration controller
     headers = {
@@ -22,7 +23,7 @@ def get_queries(n_queries=10000):
     response = requests.post(f'{proc_controller_url}/calibrations/get-batch', headers=headers, data=data)
     if response.status_code != 200:
         print(f"Error: {response.status_code}")
-        return [], {}
+        return [], {}, ''
     response = response.json()
     queries, collection_name = response['queries'], response['collection_name']
     # format into prompts
@@ -96,8 +97,8 @@ if __name__ == "__main__":
 
         debugprint(f"Loaded {len(queries)} queries successfully")
         if not queries:
-            print("No more queries to rate!!!")
-            break
+            print("No more queries to rate!!! Sleeping for 1 minute")
+            sleep(60)
 
         # Format query in LLM prompt style
         cur_prompts = list(cur_prompts_dict.keys())
