@@ -53,6 +53,8 @@ def get_queries(n_queries=10000):
             prompt_dict[LLM_TEMPLATES[llm_name].format(prompt=combined)] = query['_id']
     except Exception as e:
         send_cleanup_signal(queries, collection_name)
+        print("error in get_queries")
+        exit()
     return queries, prompt_dict, collection_name
 
 if __name__ == "__main__":

@@ -108,6 +108,6 @@ async def clean_up(request: GetBatchResponse, background_tasks: BackgroundTasks)
     '''
     Clean up when calibration runner process fails
     '''
-    coll = db[collection_name_f.format(dimension=CUR_DIMENSION, llm_name=request.llm_name)]
+    coll = db[request.collection_name]
     background_tasks.add_task(revert_query_status, request.queries, coll)
     return {'status': 'reverting queries to ready status...'}
