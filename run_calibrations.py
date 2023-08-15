@@ -52,8 +52,11 @@ def get_queries(n_queries=10000, samples={}, prompts={}, prefixes={}):
             combined = f"{prefix}\n{prompt}\nSample:\n{sample}"
             prompt_dict[LLM_TEMPLATES[llm_name].format(prompt=combined)] = query['_id']
     except Exception as e:
+        print(query['prompt_index'])
+        print(prompts.keys())
+        
         send_cleanup_signal(queries, collection_name)
-        print("error in get_queries")
+        print("error indexing prompts/samples/prefixes get_queries")
         exit()
     return queries, prompt_dict, collection_name
 
