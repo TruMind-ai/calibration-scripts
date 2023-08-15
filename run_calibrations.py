@@ -124,7 +124,7 @@ if __name__ == "__main__":
         try:
             if prompts == {} or samples == {}:
                 _, _, collection_name = get_queries(n_queries=0)
-                dim = re.findall(r'queries/(\w+)/', collection_name)[0]
+                dim = re.findall(r'/(\w+)$', collection_name)[0]
                 prompts = {prompt['prompt_index']:prompt for prompt in list(db[f'core_prompts/{dim}'].find({}))}
                 debugprint(f"Loaded {len(prompts)} prompts successfully")
                 samples = {sample['sample_index']:sample for sample in list(db[f'samples/{dim}'].find({}))}
