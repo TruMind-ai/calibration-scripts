@@ -19,7 +19,7 @@ def get_queries(n_queries=10000):
             'Content-Type': 'application/json',
         }
     data = json.dumps({'n_queries': n_queries, 'llm_name': llm_name})
-    response = requests.post('http://localhost:8080/calibrations/get-batch', headers=headers, data=data)
+    response = requests.post(f'{proc_controller_url}/calibrations/get-batch', headers=headers, data=data)
     if response.status_code != 200:
         print(f"Error: {response.status_code}")
         return [], {}
