@@ -86,15 +86,13 @@ if __name__ == "__main__":
         batch_start = time.time()
         debugprint('Queries rated:', batch_num*batch_size)
         # get batch of queries from controller
-        queries, cur_prompts_dict, collection_name = get_queries(n_queries=batch_size)
-        if prompts == {}:
+        if prompts == {} or samples == {}:
+            queries, cur_prompts_dict, collection_name = get_queries(n_queries=0)
             prompts = {prompt['prompt_index']:prompt for prompt in list(db[collection_name].find({}))}
             debugprint(f"Loaded {len(prompts)} prompts successfully")
-
-        if samples == {}:
             samples = {sample['sample_index']:sample for sample in list(db[collection_name].find({}))}
             debugprint(f"Loaded {len(samples)} samples successfully")
-
+        queries, cur_prompts_dict, collection_name = get_queries(n_queries=batch_size)
         debugprint(f"Loaded {len(queries)} queries successfully")
         if not queries:
             print("No more queries to rate!!! Sleeping for 1 minute")

@@ -61,6 +61,18 @@ def update_queries_to_processing_status(queries: list,  collection: Collection):
             print('Error updating query to processing status!')
             print(e)
             break
+def revert_query_status(queries:list, collection: Collection):
+    if 'reference' in collection.name:
+        print("Not allowed to modify reference collection!")
+        return
+    for query in queries:
+        try:
+            collection.update_one({'_id': query['_id']}, {'$set': {'rating': '-1'}})
+        except Exception as e:
+            print('Error updating query to ready status!')
+            print(e)
+            break
+
 
 @app.post('/calibrations/get-batch', response_model=GetBatchResponse)
 async def chat(request: GetBatchParams, background_tasks: BackgroundTasks):
@@ -90,3 +102,12 @@ async def chat(request: GetBatchParams, background_tasks: BackgroundTasks):
     # return the sample id
     resp = GetBatchResponse(queries=queries, collection_name=coll.name)
     return resp
+
+@app.post('/calibrations/clean-up')
+async def clean_up(request: GetBatchResponse, background_tasks: BackgroundTasks):
+    '''
+    Clean up when calibration runner process fails
+    '''
+    coll = db[collection_name_f.format(dimension=CUR_DIMENSION, llm_name=request.llm_name)]
+    background_tasks.add_task(update_queries_to_processing_status, request.queries, coll)
+    return {'status': 'reverting queries to ready status...'}
