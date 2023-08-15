@@ -14,6 +14,7 @@ from utils.utils import *
 import requests
 from bson import ObjectId
 from time import sleep
+import re
 
 
 def send_cleanup_signal(queries: list, collection_name:str):
@@ -106,7 +107,6 @@ if __name__ == "__main__":
 
     samples = {}
     start = time.time()
-    
     while True: 
         batch_start = time.time()
         debugprint('Queries rated:', batch_num*batch_size)
@@ -114,9 +114,10 @@ if __name__ == "__main__":
         try:
             if prompts == {} or samples == {}:
                 _, _, collection_name = get_queries(n_queries=0)
-                prompts = {prompt['prompt_index']:prompt for prompt in list(db[collection_name].find({}))}
+                dim = re.findall(r'queries/(\w+)/', collection_name)[0]
+                prompts = {prompt['prompt_index']:prompt for prompt in list(db[f'prompts/{dim}'].find({}))}
                 debugprint(f"Loaded {len(prompts)} prompts successfully")
-                samples = {sample['sample_index']:sample for sample in list(db[collection_name].find({}))}
+                samples = {sample['sample_index']:sample for sample in list(db[f'samples/{dim}'].find({}))}
                 debugprint(f"Loaded {len(samples)} samples successfully")
             queries, cur_prompts_dict, collection_name = get_queries(n_queries=batch_size, samples=samples, prompts=prompts, prefixes=prefixes)
             debugprint(f"Loaded {len(queries)} queries successfully")
