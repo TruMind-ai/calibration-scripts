@@ -51,7 +51,6 @@ if __name__ == "__main__":
     parser.add_argument("--is_test_run", type=bool, default=False)
     parser.add_argument('--debug', type=bool, default=False)
     parser.add_argument('--batch_size', type=int, default=3000)
-    parser.add_argument('-d','--dimension', action='append', help='<Required> Set flag', required=True)
 
 
     args = parser.parse_args()
@@ -73,15 +72,13 @@ if __name__ == "__main__":
     batch_size = args.batch_size
     debugprint(f"Batch size: {batch_size}")
     batch_num=0
-
+    
     prefixes = {prefix['prefix_index']:prefix for prefix in list(db['prefixes'].find({}))}
     debugprint(f"Loaded {len(prefixes)} prefixes successfully")
 
-    prompts = {prompt['prompt_index']:prompt for prompt in list(db[f'core_prompts/{dim}'].find({}))}
-    debugprint(f"Loaded {len(prompts)} prompts successfully")
+    prompts = {}
 
-    samples = {sample['sample_index']:sample for sample in list(db[f'samples/{dim}'].find({}))}
-    debugprint(f"Loaded {len(samples)} samples successfully")
+    samples = {}
     start = time.time()
 
     while True: 
@@ -89,6 +86,14 @@ if __name__ == "__main__":
         debugprint('Queries rated:', batch_num*batch_size)
         # get batch of queries from controller
         queries, cur_prompts_dict, collection_name = get_queries(n_queries=batch_size)
+        if prompts == {}:
+            prompts = {prompt['prompt_index']:prompt for prompt in list(db[collection_name].find({}))}
+            debugprint(f"Loaded {len(prompts)} prompts successfully")
+
+        if samples == {}:
+            samples = {sample['sample_index']:sample for sample in list(db[collection_name].find({}))}
+            debugprint(f"Loaded {len(samples)} samples successfully")
+
         debugprint(f"Loaded {len(queries)} queries successfully")
         if not queries:
             print("No more queries to rate!!!")
