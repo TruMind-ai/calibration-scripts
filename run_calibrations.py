@@ -15,7 +15,16 @@ import requests
 from bson import ObjectId
 from time import sleep
 import re
-
+import signal
+import time
+ 
+def handler(signum, frame):
+    if queries:
+        send_cleanup_signal(queries, collection_name)
+    exit(1)
+ 
+ 
+signal.signal(signal.SIGINT, handler)
 
 def send_cleanup_signal(queries: list, collection_name:str):
     # call calibration controller
@@ -107,6 +116,7 @@ if __name__ == "__main__":
 
     samples = {}
     start = time.time()
+    queries=[]
     while True: 
         batch_start = time.time()
         debugprint('Queries rated:', batch_num*batch_size)
