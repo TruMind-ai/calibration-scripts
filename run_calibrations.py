@@ -8,7 +8,7 @@ from vllm import LLM, SamplingParams
 from pymongo.collection import Collection
 import json
 import tqdm
-from llm_prompt_templates import *
+from llm_prompt_templates_v2 import *
 import time 
 from utils.utils import *
 import requests
