@@ -164,3 +164,5 @@ models-weights/
 model-weights/
 .env*
 mongo_fixer.ipynb
+temp/
+.DS_Store
