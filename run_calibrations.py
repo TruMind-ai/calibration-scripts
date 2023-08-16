@@ -103,7 +103,7 @@ if __name__ == "__main__":
     # initialize LLM
     llm = LLM(model=llm_name, tensor_parallel_size=args.gpus, trust_remote_code=True, download_dir='./models-weights', 
               max_num_batched_tokens=3600, swap_space=4, gpu_memory_utilization=0.96)
-    sampling_params = SamplingParams(temperature=args.temp, max_tokens=1)
+    sampling_params = SamplingParams(temperature=args.temp, max_tokens=2)
     
     batch_size = args.batch_size
     debugprint(f"Batch size: {batch_size}")
