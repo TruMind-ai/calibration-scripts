@@ -85,7 +85,7 @@ def update_queries_to_processing_status(queries: list,  collection: Collection):
             collection.update_one({'prefix_index': query['prefix_index'],
                                    'prompt_index': query['prompt_index'],
                                    'sample_index': query['sample_index']},
-                                  {'$set': {'rating': '0'}})
+                                  {'$set': {'rating': -100}})
         except Exception as e:
             print('Error updating query to processing status!')
             print(e)
@@ -100,7 +100,7 @@ def revert_query_status(queries: list, collection: Collection):
         try:
             collection.update_one({'prefix_id': query['prefix_id'],
                                    'prompt_id': query['prompt_id'],
-                                   'sample_id': query['sample_id']}, 
+                                   'sample_id': query['sample_id']},
                                   {'$set': {'rating': '-1'}})
         except Exception as e:
             print('Error updating query to ready status!')
@@ -142,6 +142,7 @@ async def chat(request: GetBatchParams, background_tasks: BackgroundTasks):
     # update vm information
     # vm_connection_info[request.llm_name].last_batch_requested = datetime.now()
     return resp
+
 
 @app.post('/calibrations/cleanup')
 async def clean_up(request: GetBatchResponse, background_tasks: BackgroundTasks):
