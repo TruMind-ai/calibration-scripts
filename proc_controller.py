@@ -101,7 +101,7 @@ def revert_query_status(queries: list, collection: Collection):
             collection.update_one({'prefix_id': query['prefix_id'],
                                    'prompt_id': query['prompt_id'],
                                    'sample_id': query['sample_id']},
-                                  {'$set': {'rating': '-1'}})
+                                  {'$set': {'rating': -1, 'latency': -1}})
         except Exception as e:
             print('Error updating query to ready status!')
             print(e)

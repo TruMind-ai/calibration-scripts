@@ -49,8 +49,13 @@ def get_queries(n_queries=10000, samples={}, prompts={}, prefixes={}):
         'Content-Type': 'application/json',
     }
     data = json.dumps({'n_queries': n_queries, 'llm_name': llm_name})
-    response = requests.post(
-        f'{proc_controller_url}/calibrations/get-batch', headers=headers, data=data)
+    try:
+        response = requests.post(
+            f'{proc_controller_url}/calibrations/get-batch', headers=headers, data=data)
+    except Exception as e:
+        print("error getting queries from proc controller")
+        sleep(30)
+        return [], {}, ''
     if response.status_code != 200:
         print(f"Error: {response.status_code}")
         return [], {}, ''
@@ -131,6 +136,10 @@ if __name__ == "__main__":
         try:
             if prompts == {} or samples == {}:
                 _, _, collection_name = get_queries(n_queries=0)
+                if collection_name == '':
+                    print("Error connecting to controller!! Sleeping for 1 minute")
+                    sleep(60)
+                    continue
                 dim = re.findall(r'/(\w+)$', collection_name)[0]
                 prompts = {prompt['prompt_index']: prompt for prompt in list(
                     db[f'core_prompts/{dim}'].find({}))}
