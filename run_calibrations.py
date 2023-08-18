@@ -20,7 +20,7 @@ load_dotenv('.env-db')
 
 def handler(signum, frame):
     if queries:
-        send_cleanup_signal(queries, collection_name)
+        send_cleanup_signal(queries, collection_name, excep="interrupted")
     exit(1)
 
 
