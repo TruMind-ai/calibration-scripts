@@ -139,7 +139,8 @@ async def chat(request: GetBatchParams, background_tasks: BackgroundTasks):
     # background_tasks.add_task(
         # update_queries_to_processing_status, queries, coll)
     # return the sample id
-    resp = GetBatchResponse(queries=queries, collection_name=coll.name)
+    resp = GetBatchResponse(
+        queries=queries, collection_name=coll.name, exception=None)
     # update vm information
     # vm_connection_info[request.llm_name].last_batch_requested = datetime.now()
     return resp
