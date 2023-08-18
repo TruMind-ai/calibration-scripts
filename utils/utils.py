@@ -1,7 +1,11 @@
 from pymongo import MongoClient
 import os
 
-all_scales = ['contrast', 'authority', 'consensus', 'consistency', 'scarcity', 'unity', 'liking', 'reciprocity']
+all_scales = ['contrast', 'authority', 'consensus',
+              'consistency', 'scarcity', 'unity', 'liking', 'reciprocity']
+all_llms = ['OpenAssistant/llama2-13b-orca-8k-3319',
+            'openchat/openchat_v3.1', 'baichuan-inc/Baichuan-13B-Base']
+
 
 def get_database() -> MongoClient:
     '''
