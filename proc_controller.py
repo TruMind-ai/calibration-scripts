@@ -147,7 +147,8 @@ async def chat(request: GetBatchParams, background_tasks: BackgroundTasks):
 
 
 @app.post('/calibrations/cleanup')
-async def clean_up(request):#, background_tasks: BackgroundTasks):
+# , background_tasks: BackgroundTasks):
+async def clean_up(request: GetBatchResponse):
     '''
     Clean up when calibration runner process fails
     '''

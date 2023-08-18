@@ -18,7 +18,6 @@ from dotenv import load_dotenv
 load_dotenv('.env-db')
 
 
-
 def handler(signum, frame):
     if queries:
         send_cleanup_signal(queries, collection_name)
@@ -35,7 +34,8 @@ def send_cleanup_signal(queries: list, collection_name: str, excep: str):
     }
     queries = [{i: str(query[i]) if isinstance(
         query[i], ObjectId) else query[i] for i in query} for query in queries]
-    data = json.dumps({'queries': queries, 'collection_name': collection_name, 'exception': excep})
+    data = json.dumps(
+        {'queries': queries, 'collection_name': collection_name, 'exception': excep})
     response = requests.post(
         f'{proc_controller_url}/calibrations/cleanup', headers=headers, data=data)
     if response.status_code != 200:
@@ -122,7 +122,8 @@ if __name__ == "__main__":
     debugprint(f"Batch size: {batch_size}")
     batch_num = 0
 
-    prefixes = {prefix['prefix_index']: prefix for prefix in list(db['prefixes'].find({}))}
+    prefixes = {prefix['prefix_index']
+        : prefix for prefix in list(db['prefixes'].find({}))}
     debugprint(f"Loaded {len(prefixes)} prefixes successfully")
 
     prompts = {}
@@ -189,7 +190,7 @@ if __name__ == "__main__":
             batch_num += 1
         except Exception as e:
             send_cleanup_signal(
-                queries=queries, collection_name=collection_name, excep= str(e))
+                queries=queries, collection_name=collection_name, excep=str(e))
     end = time.time()
     print("Done! Overall timing stats: ")
     print("LATENCY:", (end-start)/len(prompts))
