@@ -36,8 +36,6 @@ app.add_middleware(
 
 
 # Initialize database
-db = get_database()
-collection_name_f = 'queries/{llm_name}/{dimension}'
 
 # initialize internal dict of ratings
 ratings_queue = {}
