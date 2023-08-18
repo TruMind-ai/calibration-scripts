@@ -74,6 +74,7 @@ class GetBatchResponse(BaseModel):
     '''
     queries: list
     collection_name: str
+    exception: str
 
 
 def update_queries_to_processing_status(queries: list,  collection: Collection):
@@ -149,9 +150,10 @@ async def clean_up(request: GetBatchResponse, background_tasks: BackgroundTasks)
     '''
     Clean up when calibration runner process fails
     '''
-    coll = db[request.collection_name]
-    background_tasks.add_task(revert_query_status, request.queries, coll)
-    return {'status': 'reverting queries to ready status...'}
+    print(request.exception)
+    # coll = db[request.collection_name]
+    # background_tasks.add_task(revert_query_status, request.queries, coll)
+    # return {'status': 'reverting queries to ready status...'}
 
 # Used for checking status of LLMs
 

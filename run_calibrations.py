@@ -27,14 +27,14 @@ def handler(signum, frame):
 signal.signal(signal.SIGINT, handler)
 
 
-def send_cleanup_signal(queries: list, collection_name: str):
+def send_cleanup_signal(queries: list, collection_name: str, excep: str):
     # call calibration controller
     headers = {
         'Content-Type': 'application/json',
     }
     queries = [{i: str(query[i]) if isinstance(
         query[i], ObjectId) else query[i] for i in query} for query in queries]
-    data = json.dumps({'queries': queries, 'collection_name': collection_name})
+    data = json.dumps({'queries': queries, 'collection_name': collection_name, 'exception': excep})
     response = requests.post(
         f'{proc_controller_url}/calibrations/cleanup', headers=headers, data=data)
     if response.status_code != 200:
@@ -188,7 +188,7 @@ if __name__ == "__main__":
             batch_num += 1
         except Exception as e:
             send_cleanup_signal(
-                queries=queries, collection_name=collection_name)
+                queries=queries, collection_name=collection_name, excep= str(e))
     end = time.time()
     print("Done! Overall timing stats: ")
     print("LATENCY:", (end-start)/len(prompts))
