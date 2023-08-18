@@ -135,8 +135,8 @@ async def chat(request: GetBatchParams, background_tasks: BackgroundTasks):
             print('No more queries to rate!')
             break
 
-    background_tasks.add_task(
-        update_queries_to_processing_status, queries, coll)
+    # background_tasks.add_task(
+        # update_queries_to_processing_status, queries, coll)
     # return the sample id
     resp = GetBatchResponse(queries=queries, collection_name=coll.name)
     # update vm information
