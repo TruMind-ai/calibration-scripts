@@ -79,7 +79,7 @@ def get_queries(n_queries=10000, samples={}, prompts={}, prefixes={}):
         print(combined)
         print(e)
 
-        send_cleanup_signal(queries, collection_name)
+        send_cleanup_signal(queries, collection_name, str(e))
         print("error indexing prompts/samples/prefixes get_queries")
         exit()
     return queries, prompt_dict, collection_name
