@@ -1,5 +1,10 @@
-dnspython==2.4.2
+dnspython==2.4
 pymongo==4.4.1
 python-dotenv==1.0.0
 vllm
 ray[default]
+bson
+tqdm
+pandas
+numpy
+requests
