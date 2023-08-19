@@ -39,7 +39,7 @@ def register_worker_with_orchestrator() -> bool:
         'Content-Type': 'application/json',
     }
     data = json.dumps(vars(worker_info))
-    res = requests.post('/calibrations/register-worker', headers=headers, data=data)
+    res = requests.post(f'{ORCHESTRATOR_URL}/calibrations/register-worker', headers=headers, data=data)
     return res.status_code == 200
         
 def format_queries_for_vllm(query_batch: QueryBatch):
@@ -91,7 +91,7 @@ def upload_query_batch(query_batch: QueryBatch) -> bool:
         'Content-Type': 'application/json',
     }
     data = json.dumps(vars(query_batch))
-    res = requests.post("/calibration/upload-queries", headers=headers, data=data)
+    res = requests.post(f"{ORCHESTRATOR_URL}/calibration/upload-queries", headers=headers, data=data)
     return res.status_code == 200
 
 def do_one_batch() -> None:
