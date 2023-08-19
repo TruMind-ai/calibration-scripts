@@ -9,6 +9,7 @@ from bson import ObjectId
 import uuid
 from src.constants import LLM_TEMPLATES_V2
 from dotenv import load_dotenv
+import json 
 
 load_dotenv('.env-db')
 
@@ -37,7 +38,7 @@ def register_worker_with_orchestrator() -> bool:
     headers = {
         'Content-Type': 'application/json',
     }
-    data = worker_info.model_dump_json()
+    data = json.dumps(vars(worker_info))
     res = requests.post('/calibrations/register-worker', headers=headers, data=data)
     return res.status_code == 200
         
@@ -89,7 +90,7 @@ def upload_query_batch(query_batch: QueryBatch) -> bool:
     headers = {
         'Content-Type': 'application/json',
     }
-    data = query_batch.model_dump_json()
+    data = json.dumps(vars(query_batch))
     res = requests.post("/calibration/upload-queries", headers=headers, data=data)
     return res.status_code == 200
 

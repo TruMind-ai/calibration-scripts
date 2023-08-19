@@ -1,6 +1,5 @@
 pymongo==4.4.1
 python-dotenv==1.0.0
-pydantic==2.2.1
 uvicorn
 vllm
 ray[default]
