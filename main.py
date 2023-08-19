@@ -66,6 +66,7 @@ def get_query_batch_from_controller() -> QueryBatch:
     headers = {
         'Content-Type': 'application/json',
     }
+    
     res = requests.get(url, headers=headers)
     res = res.json()
     qb = QueryBatch()
@@ -73,6 +74,9 @@ def get_query_batch_from_controller() -> QueryBatch:
     qb.dimension = res['dimension']
     qb.query_list = res['query_list']
     qb.worker_id = res['worker_id']
+    if worker_state.llm == None:
+        worker_state.llm = LLM(qb.llm_name)
+        worker_state.sampling_params = SamplingParams(temperature=1, max_tokens=2)
     return qb
     
 
