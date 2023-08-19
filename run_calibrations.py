@@ -17,6 +17,7 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 load_dotenv('.env-db')
 
+#TODO: create worker ID
 
 def handler(signum, frame):
     if queries:
@@ -51,8 +52,8 @@ def get_queries(n_queries=10000, samples={}, prompts={}, prefixes={}):
     }
     data = json.dumps({'n_queries': n_queries, 'llm_name': llm_name})
     try:
-        response = requests.post(
-            f'{proc_controller_url}/calibrations/get-batch', headers=headers, data=data)
+        response = requests.get(
+            f'{proc_controller_url}/calibrations/get-new-batch', headers=headers, data=data)
     except Exception as e:
         print("error getting queries from proc controller")
         sleep(30)

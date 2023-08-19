@@ -1,19 +1,7 @@
-from tqdm import tqdm
-from pymongo import MongoClient
+from pymongo.database import Database
 import os
-from dotenv import load_dotenv
-load_dotenv('.env-db')
-
-# from transformers import LlamaTokenizerFast
-# tokenizer = LlamaTokenizerFast.from_pretrained(
-#     'hf-internal-testing/llama-tokenizer')
-
-
-# def count_tokens(prompt):
-#     return len(tokenizer.tokenize(prompt))
-
-
-def get_database() -> MongoClient:
+from pymongo import MongoClient
+def get_database() -> Database:
     '''
     This function returns associated MongoDB database 
     for calibrations
