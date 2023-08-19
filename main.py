@@ -17,7 +17,7 @@ load_dotenv('.env')
 ORCHESTRATOR_URL=os.getenv('ORCHESTRATOR_URL')
 
 # instantiate worker info
-worker_info = WorkerInfo(worker_id=uuid.uuid1(), ip_address='', compute_units=1)
+worker_info = WorkerInfo(worker_id=str(uuid.uuid1()), ip_address='', compute_units=1)
 
 # initialize state
 worker_state = WorkerState(worker_info.worker_id)
