@@ -2,7 +2,7 @@ import time
 from time import sleep
 import requests
 from utils.utils import get_database
-from src.state_management import WorkerInfo, QueryBatch, Query, WorkerState
+from src.state_management import WorkerInfo, QueryBatch, WorkerState
 from vllm import LLM, SamplingParams
 import os
 from bson import ObjectId
@@ -44,6 +44,7 @@ def register_worker_with_orchestrator() -> bool:
     return res.status_code == 200
         
 def format_queries_for_vllm(query_batch: QueryBatch):
+    print("formatting queries for vllm...")
     
     prefixes = list(db[f'prefixes'])
     prompts = list(db[f'core_prompts/{query_batch.dimension}'])
@@ -58,22 +59,31 @@ def format_queries_for_vllm(query_batch: QueryBatch):
         combined = f"{prefix}\n{prompt}\nSample:\n{sample}"
         prompt_dict[LLM_TEMPLATES[query_batch.llm_name].format(
             prompt=combined)] = query['_id']
+    print(len(prompt_dict),"queries in batch")
+    
     return prompt_dict
         
 
 def get_query_batch_from_controller() -> QueryBatch:
+    print("getting query batch from controller...")
     url = f'{ORCHESTRATOR_URL}/calibrations/get-new-batch/{worker_info.id}'
     headers = {
         'Content-Type': 'application/json',
     }
     
     res = requests.get(url, headers=headers)
+    print(res)
+    
     res = res.json()
+    
+    
     qb = QueryBatch()
     qb.llm_name = res['llm_name']
     qb.dimension = res['dimension']
     qb.query_list = res['query_list']
     qb.worker_id = res['worker_id']
+    print(qb)
+    
     if worker_state.llm == None:
         worker_state.llm = LLM(qb.llm_name)
         worker_state.sampling_params = SamplingParams(temperature=1, max_tokens=2)
@@ -81,6 +91,7 @@ def get_query_batch_from_controller() -> QueryBatch:
     
 
 def upload_query_batch(query_batch: QueryBatch) -> bool:
+    print("uploading query batch...")
     headers = {
         'Content-Type': 'application/json',
     }
