@@ -17,10 +17,7 @@ load_dotenv('.env')
 ORCHESTRATOR_URL=os.getenv('ORCHESTRATOR_URL')
 
 # instantiate worker info
-worker_info = WorkerInfo()
-worker_info.worker_id = uuid.uuid1()
-worker_info.ip_address = ''
-worker_info.compute_units = 1
+worker_info = WorkerInfo(worker_id=uuid.uuid1(), ip_address='', compute_units=1)
 
 # initialize state
 worker_state = WorkerState(worker_info.worker_id)
@@ -77,11 +74,7 @@ def get_query_batch_from_controller() -> QueryBatch:
     res = res.json()
     
     
-    qb = QueryBatch()
-    qb.llm_name = res['llm_name']
-    qb.dimension = res['dimension']
-    qb.query_list = res['query_list']
-    qb.worker_id = res['worker_id']
+    qb = QueryBatch(res['query_list'], worker_id=res['worker_id'],llm_name=res['llm_name'], dimension=res['dimension'])
     print(qb)
     
     if worker_state.llm == None:
