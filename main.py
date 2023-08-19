@@ -140,6 +140,7 @@ def do_one_batch() -> None:
     upload_query_batch(current_query_batch)
     
 def main():
+    register_worker_with_orchestrator()
     while True:
         do_one_batch()
                     
