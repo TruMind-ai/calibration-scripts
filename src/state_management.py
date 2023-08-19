@@ -22,7 +22,7 @@ class WorkerInfo(BaseModel):
     Stores info about the worker related to server-side, such as worker 
     ID and resource availability. Model is shared between worker and orchestrator
     '''
-    id: str
+    worker_id: str
     ip_address: str = ""
     # number of A100 80GB Cards this worker has
     compute_units: int = 1

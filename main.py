@@ -18,12 +18,12 @@ ORCHESTRATOR_URL=os.getenv('ORCHESTRATOR_URL')
 
 # instantiate worker info
 worker_info = WorkerInfo()
-worker_info.id = uuid.uuid1()
+worker_info.worker_id = uuid.uuid1()
 worker_info.ip_address = ''
 worker_info.compute_units = 1
 
 # initialize state
-worker_state = WorkerState(worker_info.id)
+worker_state = WorkerState(worker_info.worker_id)
 
 # set sampling params
 sampling_params = SamplingParams(max_tokens=2)
@@ -66,7 +66,7 @@ def format_queries_for_vllm(query_batch: QueryBatch):
 
 def get_query_batch_from_controller() -> QueryBatch:
     print("getting query batch from controller...")
-    url = f'{ORCHESTRATOR_URL}/calibrations/get-new-batch/{worker_info.id}'
+    url = f'{ORCHESTRATOR_URL}/calibrations/get-new-batch/{worker_info.worker_id}'
     headers = {
         'Content-Type': 'application/json',
     }
