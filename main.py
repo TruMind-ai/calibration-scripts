@@ -10,7 +10,7 @@ import uuid
 from src.constants import LLM_TEMPLATES_V2
 from dotenv import load_dotenv
 
-load_dotenv('.env')
+load_dotenv('.env-db')
 
 
 
