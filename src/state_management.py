@@ -27,10 +27,6 @@ class WorkerInfo:
         self.worker_id = worker_id
         self.ip_address = ip_address 
         self.compute_units = compute_units
-    def to_json(self):
-        return {
-            "worker_id": 
-        }
     
 class WorkerState:
 
