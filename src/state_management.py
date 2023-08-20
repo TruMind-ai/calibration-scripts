@@ -4,8 +4,6 @@ import json
 import uuid
 import time
 import asyncio
-from pymongo.database import Database
-from typing import Annotated, Any
 class QueryBatch: 
     def __init__(self, query_list: list, worker_id: str, llm_name: str, dimension: str) -> None:
         self.query_list = query_list
