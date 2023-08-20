@@ -85,7 +85,7 @@ class WorkerInfo:
     Stores info about the worker related to server-side, such as worker 
     ID and resource availability. Model is shared between worker and orchestrator
     '''
-    def __init__(self, workerid: str, ip_address: str = "", compute_units: int = 1):
+    def __init__(self, worker_id: str, ip_address: str = "", compute_units: int = 1):
         self.worker_id = worker_id
         self.ip_address = ip_address 
         self.compute_units = compute_units
