@@ -69,7 +69,6 @@ def get_query_batch_from_controller() -> QueryBatch:
     headers = {
         'Content-Type': 'application/json',
     }
-    
     res = requests.get(url, headers=headers)
     print(res)
     res = res.json()
@@ -91,12 +90,13 @@ def upload_query_batch(query_batch: QueryBatch) -> bool:
     return res.status_code == 200
 
 def do_one_batch() -> None:
-    batch_start = time.time()
     # get ratings from controller 
     current_query_batch = get_query_batch_from_controller()
+    batch_start = time.time()
     if not current_query_batch.query_list:
         print("No more queries to rate!!! Sleeping for 1 minute")
         sleep(60)
+        return
 
     # Format query in LLM prompt style
     cur_prompts_dict = format_queries_for_vllm(current_query_batch)

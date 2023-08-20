@@ -15,6 +15,7 @@ class QueryBatch:
         res = QueryBatch(query_list=raw_batch['query_list'], worker_id=raw_batch['worker_id'], 
                      llm_name=raw_batch['llm_name'], dimension=raw_batch['dimension'])
         res.query_list = [Query.from_dict(q) for q in res.query_list]
+        return res
 class Query:
     def __init__(self, _id: ObjectId, prefix_index: int, prompt_index: int , sample_index: int , num_tries: int = 0, latency: float = -1, rating: int = -1) -> None:
         self._id = _id
