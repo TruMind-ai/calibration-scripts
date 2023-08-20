@@ -51,13 +51,13 @@ def format_queries_for_vllm(query_batch: QueryBatch):
     
     prompt_dict = {}
     for query in query_batch.query_list:
-        query['_id'] = ObjectId(query['_id'])
+        query['id'] = ObjectId(query['id'])
         prefix = prefixes[query['prefix_index']]['prefix']
         prompt = prompts[query['prompt_index']]['combined_prompt']
         sample = samples[query['sample_index']]['sample']
         combined = f"{prefix}\n{prompt}\nSample:\n{sample}"
         prompt_dict[LLM_TEMPLATES[query_batch.llm_name].format(
-            prompt=combined)] = query['_id']
+            prompt=combined)] = query['id']
     print(len(prompt_dict),"queries in batch")
     
     return prompt_dict
@@ -85,7 +85,7 @@ def upload_query_batch(query_batch: QueryBatch) -> bool:
     headers = {
         'Content-Type': 'application/json',
     }
-    data = json.dumps(vars(query_batch))
+    data = json.dumps(query_batch.to_dict())
     res = requests.post(f"{ORCHESTRATOR_URL}/calibration/upload-queries", headers=headers, data=data)
     return res.status_code == 200
 
@@ -122,8 +122,8 @@ def do_one_batch() -> None:
     # update queries with ratings, collect timing stats
     for _, query in enumerate(current_query_batch.query_list):
         query['rating'] = -1
-        if query['_id'] in ratings:
-            query['rating'] = ratings[query['_id']]
+        if query['id'] in ratings:
+            query['rating'] = ratings[query['id']]
         else:
             print("Error: query id not in ratings!")
         query['num_tries'] += 1
