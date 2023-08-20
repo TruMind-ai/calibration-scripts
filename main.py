@@ -72,15 +72,11 @@ def get_query_batch_from_controller() -> QueryBatch:
     
     res = requests.get(url, headers=headers)
     print(res)
-    
     res = res.json()
-    
-    
-    qb = QueryBatch(res['query_list'], worker_id=res['worker_id'],llm_name=res['llm_name'], dimension=res['dimension'])
-    print(qb)
-    
+    qb = QueryBatch.from_dict(res)
+    print(len(qb.query_list), "Queries in batch")
     if worker_state.llm == None:
-        worker_state.llm = LLM(qb.llm_name)
+        worker_state.llm = LLM(model=qb.llm_name, trust_remote_code=True, download_dir='./models-weights')
         worker_state.sampling_params = SamplingParams(temperature=1, max_tokens=2)
     return qb
     

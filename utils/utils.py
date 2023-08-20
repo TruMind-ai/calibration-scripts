@@ -1,5 +1,6 @@
 from pymongo.database import Database
 import os
+from src.state_management import Query, QueryBatch
 from pymongo import MongoClient
 def get_database() -> Database:
     '''
@@ -13,3 +14,7 @@ def get_database() -> Database:
     client = MongoClient(CONNECTION_STRING)
     # return database
     return client[DB_NAME]
+
+
+        
+    
