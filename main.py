@@ -143,8 +143,9 @@ def main():
     while True:
         try:
             do_one_batch()
-        except:
+        except Exception as e:
             print("ERRORS - trying to re-register...")
+            print(str(e))
             if not register_worker_with_orchestrator():
                 print("ERROR RE-REGISTERING")
             print("error doing batch... sleeping for 30s")
