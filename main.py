@@ -123,17 +123,17 @@ def do_one_batch() -> None:
 
     # update queries with ratings, collect timing stats
     for _, query in enumerate(current_query_batch.query_list):
-        query['rating'] = -1
-        if query['id'] in ratings:
-            query['rating'] = ratings[query['id']]
+        query.rating = -1
+        if query.id in ratings:
+            query.rating = ratings[query.id]
         else:
             print("Error: query id not in ratings!")
-        query['num_tries'] += 1
+        query.num_tries += 1
         avg_query_time = (time.time()-batch_start)/len(current_query_batch.query_list)
-        if query['total_seconds'] == -1:
-            query['total_seconds'] = avg_query_time
+        if query.latency == -1:
+            query.latency = avg_query_time
         else:
-            query['total_seconds'] += avg_query_time
+            query.latency = ((query.num_tries-1)*query.latency + avg_query_time)/query.num_tries
             
     # upload batch
     upload_query_batch(current_query_batch)
