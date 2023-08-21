@@ -45,19 +45,21 @@ def register_worker_with_orchestrator() -> bool:
 def format_queries_for_vllm(query_batch: QueryBatch):
     print("formatting queries for vllm...")
     
-    prefixes = list(db[f'prefixes'].find({}))
-    prompts = list(db[f'core_prompts/{query_batch.dimension}'].find({}))
-    samples = list(db[f'samples/{query_batch.dimension}'].find({}))
+    prefixes = {prefix['prefix_index']
+        : prefix for prefix in list(db[f'prefixes'].find({}))}
+    prompts = {prompt['prompt_index']
+        : prompt for prompt in list(db[f'core_prompts/{query_batch.dimension}'].find({}))}
+    samples = {sample['sample_index']
+        : sample for sample in list(db[f'samples/{query_batch.dimension}'].find({}))}
     
     prompt_dict = {}
     for query in query_batch.query_list:
-        query['id'] = ObjectId(query['id'])
-        prefix = prefixes[query['prefix_index']]['prefix']
-        prompt = prompts[query['prompt_index']]['combined_prompt']
-        sample = samples[query['sample_index']]['sample']
+        prefix = prefixes[query.prefix_index]['prefix']
+        prompt = prompts[query.prompt_index]['combined_prompt']
+        sample = samples[query.sample_index]['sample']
         combined = f"{prefix}\n{prompt}\nSample:\n{sample}"
         prompt_dict[LLM_TEMPLATES[query_batch.llm_name].format(
-            prompt=combined)] = query['id']
+            prompt=combined)] = query.id
     print(len(prompt_dict),"queries in batch")
     
     return prompt_dict
