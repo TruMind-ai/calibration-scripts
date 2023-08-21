@@ -52,7 +52,7 @@ class Query:
         res = Query(id=raw_query['id'] if 'id' in raw_query else '_id',
         prefix_index=raw_query['prefix_index'],
         prompt_index=raw_query['prompt_index'],
-        ample_index=raw_query['sample_index'],
+        sample_index=raw_query['sample_index'],
         num_tries=raw_query['num_tries'],
         latency=raw_query['latency'],
         rating=raw_query['rating'])
