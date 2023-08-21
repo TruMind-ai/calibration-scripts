@@ -102,7 +102,7 @@ def do_one_batch() -> None:
     cur_prompts_dict = format_queries_for_vllm(current_query_batch)
     cur_prompts = list(cur_prompts_dict.keys())
     # call "generate" on the list
-    outputs = llm.generate(cur_prompts, sampling_params)
+    outputs = llm.generate(cur_prompts, sampling_params, use_tqdm=True)
     
     # extract integer rating
     ratings = {}
