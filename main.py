@@ -95,9 +95,9 @@ def do_one_batch() -> None:
     # get ratings from controller 
     current_query_batch = get_query_batch_from_controller()
     batch_start = time.time()
-    if not current_query_batch.query_list:
-        print("No more queries to rate!!! Sleeping for 1 minute")
-        sleep(60)
+    if not current_query_batch or not current_query_batch.query_list:
+        print("No more queries to rate!!! Sleeping for 30 seconds")
+        sleep(30)
         return
 
     # Format query in LLM prompt style
@@ -141,7 +141,11 @@ def do_one_batch() -> None:
 def main():
     register_worker_with_orchestrator()
     while True:
-        do_one_batch()
+        try:
+            do_one_batch()
+        except:
+            print("error doing batch... sleeping for 30s")
+            sleep(30)
                     
 if __name__ == '__main__': 
     main()
