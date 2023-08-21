@@ -45,9 +45,9 @@ def register_worker_with_orchestrator() -> bool:
 def format_queries_for_vllm(query_batch: QueryBatch):
     print("formatting queries for vllm...")
     
-    prefixes = list(db[f'prefixes'])
-    prompts = list(db[f'core_prompts/{query_batch.dimension}'])
-    samples = list(db[f'samples/{query_batch.dimension}'])
+    prefixes = list(db[f'prefixes'].find({}))
+    prompts = list(db[f'core_prompts/{query_batch.dimension}'].find({}))
+    samples = list(db[f'samples/{query_batch.dimension}'].find({}))
     
     prompt_dict = {}
     for query in query_batch.query_list:
