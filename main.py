@@ -76,7 +76,8 @@ def get_query_batch_from_controller() -> QueryBatch:
     res = res.json()
     qb = QueryBatch.from_dict(res)
     print(len(qb.query_list), "Queries in batch")
-    if worker_state.llm == None:
+    if worker_state.llm == None: #or worker_state.llm != qb.llm_name:
+        # torch.cuda.empty_cache()
         worker_state.llm = LLM(model=qb.llm_name, trust_remote_code=True, download_dir='./models-weights', gpu_memory_utilization=0.96, swap_space=4, tensor_parallel_size=1,  max_num_batched_tokens=4000)
         worker_state.sampling_params = SamplingParams(temperature=1, max_tokens=2)
     return qb

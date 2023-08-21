@@ -22,7 +22,10 @@ CHAT_TEMPLATE_V2 = 'task:\n{prompt}\nEND OF SAMPLE. Now, output the rating as an
 GUANACO_TEMPLATE_V2 = "task:\n{prompt}\n### Assistant: Rating: "
 ORCA_TEMPLATE_V2 = 'task:\n{prompt}\n</s><|assistant|>Rating: ' 
 OPENCHAT_TEMPLATE_V2 = "task:\n{prompt}\n<|end_of_turn|>GPT4 Assistant: Rating: "
-VICUNA_TEMPLATE_V2 = 'User: {prompt} Assistant:Rating: '
+VICUNA_TEMPLATE_V2 = 'User: {prompt} Assistant:Rating: ', 
+VOICELAB_TEMPLATE = '<s>[INST] human prompt [/INST] task:\n{prompt}\ngpt response </s> Rating: '
+
+
 LLM_TEMPLATES_V2 = {
     'ai21-j2-mid': CHAT_TEMPLATE_V2,
     'gpt-3.5-turbo': CHAT_TEMPLATE_V2,
@@ -36,5 +39,6 @@ LLM_TEMPLATES_V2 = {
     'baichuan-inc/Baichuan-13B-Base': DEFAULT_TEMPLATE_V2,
     'OpenAssistant/llama2-13b-orca-8k-3319': ORCA_TEMPLATE_V2,
     'openchat/openchat_v3.1': OPENCHAT_TEMPLATE_V2,
-    'augtoma/qCammel-70-x': VICUNA_TEMPLATE_V2
+    'augtoma/qCammel-70-x': VICUNA_TEMPLATE_V2,
+    L2_VOICELAB: VOICELAB_TEMPLATE
 }
