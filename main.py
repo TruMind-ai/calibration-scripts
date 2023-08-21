@@ -17,7 +17,7 @@ load_dotenv('.env-db')
 
 # ORCHESTRATOR_URL=os.getenv('ORCHESTRATOR_URL')
 
-ORCHESTRATOR_URL = "http://13.92.186.75:8000"
+ORCHESTRATOR_URL = "http://20.228.162.220:8000"
 # instantiate worker info
 worker_info = WorkerInfo(worker_id=str(uuid.uuid1()), ip_address='', compute_units=1)
 
