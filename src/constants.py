@@ -20,7 +20,7 @@ LLM_ABBR_MAP = {
 }
 
 DEFAULT_TEMPLATE_V2 = 'task:\n{prompt}\nYour rating: '
-DEFAULT_TEMPLATE_V3 = 'Task:\n{prompt}\Rating: '
+DEFAULT_TEMPLATE_V3 = 'Task:\n{prompt}\nRating: '
 CHAT_TEMPLATE_V2 = 'task:\n{prompt}\nEND OF SAMPLE. Now, output the rating as an integer from 1-10:\n'
 GUANACO_TEMPLATE_V2 = "task:\n{prompt}\n### Assistant: Rating: "
 ORCA_TEMPLATE_V2 = 'task:\n{prompt}\n</s><|assistant|>Rating: ' 

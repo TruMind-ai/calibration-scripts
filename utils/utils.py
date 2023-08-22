@@ -19,16 +19,14 @@ def get_database() -> Database:
 
 def extract_integer(text: str):
     res = -1
-    int_pat, emoji_pat = r'\d{1,2}', capture_emojis_pattern
+    int_pat = r'\d{1,2}'
     try:
         res = int(re.findall(int_pat, text)[0])
     except Exception as e:
-        print(e)
         try:
             res = EMOJI_TO_INT[re.findall(capture_emojis_pattern, text)[0].encode('unicode_escape').decode()]
         except Exception as f:
             print(text)
-            print(f)
             
     return res
         

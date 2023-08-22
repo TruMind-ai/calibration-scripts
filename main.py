@@ -10,7 +10,7 @@ import uuid
 from src.constants import LLM_TEMPLATES_V2
 from dotenv import load_dotenv
 import json 
-
+import tqdm
 load_dotenv('.env-db')
 
 
@@ -25,7 +25,7 @@ worker_info = WorkerInfo(worker_id=str(uuid.uuid1()), ip_address='', compute_uni
 worker_state = WorkerState(worker_info.worker_id)
 
 # set sampling params
-sampling_params = SamplingParams(max_tokens=2)
+worker_state.sampling_params = SamplingParams(temperature=1 ,max_tokens=2)
 
 #initialize databse
 db = get_database()
@@ -79,7 +79,6 @@ def get_query_batch_from_controller() -> QueryBatch:
     if worker_state.llm == None: #or worker_state.llm != qb.llm_name:
         # torch.cuda.empty_cache()
         worker_state.llm = LLM(model=qb.llm_name, trust_remote_code=True, download_dir='./models-weights', gpu_memory_utilization=0.98, swap_space=4, tensor_parallel_size=1,  max_num_batched_tokens=4090)
-        worker_state.sampling_params = SamplingParams(temperature=1, max_tokens=3)
     return qb
     
 
@@ -105,14 +104,11 @@ def do_one_batch() -> None:
     cur_prompts_dict = format_queries_for_vllm(current_query_batch)
     cur_prompts = list(cur_prompts_dict.keys())
     # call "generate" on the list
-    outputs = worker_state.llm.generate(cur_prompts, sampling_params, use_tqdm=True)
-    
-    # extract integer rating
     ratings = {}
-    for output in outputs:
+    outputs = worker_state.llm.generate(cur_prompts, worker_state.sampling_params)
+    for output in tqdm.tqdm(outputs):
         query_id = cur_prompts_dict[output.prompt]
-        text = output.outputs[0].text
-        ratings[query_id] = extract_integer(text)
+        ratings[query_id] = extract_integer(output.outputs[0].text)
 
     print(f"Sample Ratings: {list(ratings.values())[-10:]}")
 
