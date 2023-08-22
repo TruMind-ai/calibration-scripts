@@ -1,7 +1,7 @@
 import time
 from time import sleep
 import requests
-from utils.utils import get_database
+from utils.utils import get_database, extract_integer
 from src.state_management import WorkerInfo, QueryBatch, WorkerState
 from vllm import LLM, SamplingParams
 import os
@@ -79,7 +79,7 @@ def get_query_batch_from_controller() -> QueryBatch:
     if worker_state.llm == None: #or worker_state.llm != qb.llm_name:
         # torch.cuda.empty_cache()
         worker_state.llm = LLM(model=qb.llm_name, trust_remote_code=True, download_dir='./models-weights', gpu_memory_utilization=0.98, swap_space=4, tensor_parallel_size=1,  max_num_batched_tokens=4090)
-        worker_state.sampling_params = SamplingParams(temperature=1, max_tokens=2)
+        worker_state.sampling_params = SamplingParams(temperature=1, max_tokens=3)
     return qb
     
 
@@ -112,14 +112,7 @@ def do_one_batch() -> None:
     for output in outputs:
         query_id = cur_prompts_dict[output.prompt]
         text = output.outputs[0].text
-        try:
-            ratings[query_id] = int(text)
-        except Exception as e:
-            try:
-                ratings[query_id] = int(text[0])
-            except Exception as f:
-                ratings[query_id] = -1
-                print(f)
+        ratings[query_id] = extract_integer(text)
 
     print(f"Sample Ratings: {list(ratings.values())[-10:]}")
 
