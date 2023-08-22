@@ -20,11 +20,11 @@ LLM_ABBR_MAP = {
 }
 
 DEFAULT_TEMPLATE_V2 = 'task:\n{prompt}\nYour rating: '
-DEFAULT_TEMPLATE_V3 = 'Task:\n{prompt}\nRating: '
+DEFAULT_TEMPLATE_V3 = 'Task:\n{prompt}\Rating: '
 CHAT_TEMPLATE_V2 = 'task:\n{prompt}\nEND OF SAMPLE. Now, output the rating as an integer from 1-10:\n'
 GUANACO_TEMPLATE_V2 = "task:\n{prompt}\n### Assistant: Rating: "
 ORCA_TEMPLATE_V2 = 'task:\n{prompt}\n</s><|assistant|>Rating: ' 
-OPENCHAT_TEMPLATE_V2 = "task:\n{prompt}\n<|end_of_turn|>GPT4 Assistant: Rating: "
+OPENCHAT_TEMPLATE_V2 = "GPT4 User: {prompt}\n<|end_of_turn|>GPT4 Assistant: Rating: "
 VICUNA_TEMPLATE_V2 = 'User: {prompt} Assistant:Rating: ', 
 VOICELAB_TEMPLATE = '<s>[INST] human prompt [/INST] task:\n{prompt}\ngpt response </s> Rating: '
 
@@ -41,12 +41,13 @@ LLM_TEMPLATES_V2 = {
     'TheBloke/llama-2-70b-Guanaco-QLoRA-fp16': DEFAULT_TEMPLATE_V2,
     'baichuan-inc/Baichuan-13B-Base': DEFAULT_TEMPLATE_V2,
     'OpenAssistant/llama2-13b-orca-8k-3319': DEFAULT_TEMPLATE_V2,
-    'openchat/openchat_v3.1': DEFAULT_TEMPLATE_V3,
+    'openchat/openchat_v3.1': OPENCHAT_TEMPLATE_V2,
     'augtoma/qCammel-70-x': VICUNA_TEMPLATE_V2,
     L2_VOICELAB: VOICELAB_TEMPLATE, 
     L2: DEFAULT_TEMPLATE_V3,
     L2_ORCA_CIRCULUS: DEFAULT_TEMPLATE_V3
 }
+
 
 EMOJI_TO_INT = {
     r'\u0031\ufe0f\u20e3': 1, 
