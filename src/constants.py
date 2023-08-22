@@ -17,7 +17,7 @@ LLM_ABBR_MAP = {
     'Voicelab/trurl-2-13b': 'L2_VOICELAB'
 }
 
-DEFAULT_TEMPLATE_V2 = 'task:\n {prompt}\n Your Rating: '
+DEFAULT_TEMPLATE_V2 = 'task:\n{prompt}\nYour rating: '
 CHAT_TEMPLATE_V2 = 'task:\n{prompt}\nEND OF SAMPLE. Now, output the rating as an integer from 1-10:\n'
 GUANACO_TEMPLATE_V2 = "task:\n{prompt}\n### Assistant: Rating: "
 ORCA_TEMPLATE_V2 = 'task:\n{prompt}\n</s><|assistant|>Rating: ' 
@@ -37,8 +37,8 @@ LLM_TEMPLATES_V2 = {
     'WizardLM/WizardLM-13B-V1.2': DEFAULT_TEMPLATE_V2,
     'TheBloke/llama-2-70b-Guanaco-QLoRA-fp16': DEFAULT_TEMPLATE_V2,
     'baichuan-inc/Baichuan-13B-Base': DEFAULT_TEMPLATE_V2,
-    'OpenAssistant/llama2-13b-orca-8k-3319': ORCA_TEMPLATE_V2,
-    'openchat/openchat_v3.1': OPENCHAT_TEMPLATE_V2,
+    'OpenAssistant/llama2-13b-orca-8k-3319': DEFAULT_TEMPLATE_V2,
+    'openchat/openchat_v3.1': DEFAULT_TEMPLATE_V2,
     'augtoma/qCammel-70-x': VICUNA_TEMPLATE_V2,
     L2_VOICELAB: VOICELAB_TEMPLATE
 }
