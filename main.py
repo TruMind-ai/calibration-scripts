@@ -114,11 +114,12 @@ def do_one_batch() -> None:
         text = output.outputs[0].text
         try:
             ratings[query_id] = int(text)
-        except:
+        except Exception as e:
             try:
                 ratings[query_id] = int(text[0])
-            except:
+            except Exception as f:
                 ratings[query_id] = -1
+                print(f)
 
     print(f"Sample Ratings: {list(ratings.values())[-10:]}")
 
