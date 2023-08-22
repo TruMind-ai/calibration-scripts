@@ -42,7 +42,7 @@ LLM_TEMPLATES_V2 = {
     'TheBloke/llama-2-70b-Guanaco-QLoRA-fp16': DEFAULT_TEMPLATE_V2,
     'baichuan-inc/Baichuan-13B-Base': DEFAULT_TEMPLATE_V2,
     'OpenAssistant/llama2-13b-orca-8k-3319': DEFAULT_TEMPLATE_V2,
-    'openchat/openchat_v3.1': OPENCHAT_TEMPLATE_V2,
+    'openchat/openchat_v3.1': OPENCHAT_TEMPLATE_V3,
     'augtoma/qCammel-70-x': VICUNA_TEMPLATE_V2,
     L2_VOICELAB: VOICELAB_TEMPLATE_V2, 
     L2: DEFAULT_TEMPLATE_V3,
