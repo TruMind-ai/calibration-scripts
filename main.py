@@ -102,7 +102,7 @@ def do_one_batch() -> None:
     cur_prompts = list(cur_prompts_dict.keys())
     # call "generate" on the list
     ratings = {}
-    outputs = worker_state.llm.generate(cur_prompts, worker_state.sampling_params)
+    outputs = worker_state.llm.generate(cur_prompts, worker_state.sampling_params, use_tqdm=True)
     for i, output in enumerate(outputs):
         query_id = cur_prompts_dict[output.prompt]
         ratings[query_id] = extract_integer(output.outputs[0].text)
