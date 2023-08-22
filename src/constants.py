@@ -3,7 +3,7 @@ BAICHUAN = 'baichuan-inc/Baichuan-13B-Base'
 L2_ORCA = 'OpenAssistant/llama2-13b-orca-8k-3319'
 L2_OPENCHAT = 'openchat/openchat_v3.1'
 L2_VOICELAB = 'Voicelab/trurl-2-13b'
-L2 = 'meta-llama/Llama-2-13b-hf'
+L2 = 'TheBloke/Llama-2-13B-fp16'
 L2_ORCA_CIRCULUS = 'circulus/Llama-2-13b-orca-v1'
 
 
