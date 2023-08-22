@@ -26,7 +26,6 @@ GUANACO_TEMPLATE_V2 = "task:\n{prompt}\n### Assistant: Rating: "
 ORCA_TEMPLATE_V2 = 'task:\n{prompt}\n</s><|assistant|>Rating: ' 
 OPENCHAT_TEMPLATE_V3 = "GPT4 User: {prompt}\nRespond with a rating from 1 through 10 and nothing else.<|end_of_turn|>GPT4 Assistant: Rating: "
 VICUNA_TEMPLATE_V2 = 'User: {prompt} Assistant:Rating: ', 
-'<s>[INST] <<SYS>>  <</SYS>>\n{prompt} [/INST]\ngpt response </s>\n<s>[INST] human prompt [/INST]\ngpt response </s> Rating: '
 VOICELAB_TEMPLATE = '<s>[INST]{prompt}\nRespond with a rating from 1 through 10 and nothing else.[/INST] gpt response </s> Rating: '
 VOICELAB_TEMPLATE_V2 = "<s>[INST] <<SYS>> You are a helpful, instruction following, honest assistant who ONLY return numbers from 1-10 based on the user's request.<</SYS>>\n{prompt}[/INST]\ngpt response </s>Rating: "
 
@@ -42,7 +41,7 @@ LLM_TEMPLATES_V2 = {
     'TheBloke/llama-2-70b-Guanaco-QLoRA-fp16': DEFAULT_TEMPLATE_V2,
     'baichuan-inc/Baichuan-13B-Base': DEFAULT_TEMPLATE_V2,
     'OpenAssistant/llama2-13b-orca-8k-3319': DEFAULT_TEMPLATE_V2,
-    'openchat/openchat_v3.1': OPENCHAT_TEMPLATE_V3,
+        L2_OPENCHAT: OPENCHAT_TEMPLATE_V3,
     'augtoma/qCammel-70-x': VICUNA_TEMPLATE_V2,
     L2_VOICELAB: VOICELAB_TEMPLATE_V2, 
     L2: DEFAULT_TEMPLATE_V3,
