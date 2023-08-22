@@ -4,13 +4,10 @@ import requests
 from utils.utils import get_database, extract_integer
 from src.state_management import WorkerInfo, QueryBatch, WorkerState
 from vllm import LLM, SamplingParams
-import os
-from bson import ObjectId
 import uuid
 from src.constants import LLM_TEMPLATES_V2
 from dotenv import load_dotenv
 import json 
-import tqdm
 load_dotenv('.env-db')
 
 
@@ -106,9 +103,10 @@ def do_one_batch() -> None:
     # call "generate" on the list
     ratings = {}
     outputs = worker_state.llm.generate(cur_prompts, worker_state.sampling_params)
-    for output in tqdm.tqdm(outputs):
+    for i, output in enumerate(outputs):
         query_id = cur_prompts_dict[output.prompt]
         ratings[query_id] = extract_integer(output.outputs[0].text)
+        print('output #', i, 'rating:', ratings[query_id])
 
     print(f"Sample Ratings: {list(ratings.values())[-10:]}")
 
