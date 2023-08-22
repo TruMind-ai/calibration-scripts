@@ -22,7 +22,7 @@ worker_info = WorkerInfo(worker_id=str(uuid.uuid1()), ip_address='', compute_uni
 worker_state = WorkerState(worker_info.worker_id)
 
 # set sampling params
-worker_state.sampling_params = SamplingParams(temperature=1 ,max_tokens=2)
+worker_state.sampling_params = SamplingParams(temperature=1 ,max_tokens=3)
 
 #initialize databse
 db = get_database()
@@ -75,7 +75,7 @@ def get_query_batch_from_controller() -> QueryBatch:
     print(len(qb.query_list), "Queries in batch")
     if worker_state.llm == None: #or worker_state.llm != qb.llm_name:
         # torch.cuda.empty_cache()
-        worker_state.llm = LLM(model=qb.llm_name, trust_remote_code=True, download_dir='./models-weights', gpu_memory_utilization=0.98, swap_space=4, tensor_parallel_size=1,  max_num_batched_tokens=3800)
+        worker_state.llm = LLM(model=qb.llm_name, trust_remote_code=True, download_dir='./models-weights', gpu_memory_utilization=0.98, swap_space=4, tensor_parallel_size=1,  max_num_batched_tokens=4000)
     return qb
     
 
