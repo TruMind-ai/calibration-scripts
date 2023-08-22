@@ -22,7 +22,7 @@ worker_info = WorkerInfo(worker_id=str(uuid.uuid1()), ip_address='', compute_uni
 worker_state = WorkerState(worker_info.worker_id)
 
 # set sampling params
-worker_state.sampling_params = SamplingParams(temperature=1 ,max_tokens=3)
+worker_state.sampling_params = SamplingParams(temperature=1 ,max_tokens=2)
 
 #initialize databse
 db = get_database()
