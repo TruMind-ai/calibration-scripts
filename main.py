@@ -24,7 +24,7 @@ worker_state = WorkerState(worker_info.worker_id)
 # set sampling params
 worker_state.sampling_params = SamplingParams(temperature=1 ,max_tokens=3)
 
-#initialize databse
+#initialize database
 db = get_database()
 
 # initialize LLM templates
