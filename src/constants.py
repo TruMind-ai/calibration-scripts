@@ -47,9 +47,9 @@ VICUNA_TEMPLATE_V2 = 'User: {prompt} Assistant:Rating: ',
 VOICELAB_TEMPLATE = '<s>[INST]{prompt}\nRespond with a rating from 1 through 10 and nothing else.[/INST] gpt response </s> Rating: '
 
 ###### CURRENT TEMPLATES #######
-OPENCHAT_TEMPLATE_V3 = "GPT4 User: {prompt}\nRespond with a rating from 1 through 10 and nothing else.<|end_of_turn|>GPT4 Assistant: "
-ORCA_TEMPLATE_V2 = "<|system|>You are an objective instruction-following assistant. You must output a rating from 1-10 based on the user's criteria.</s><|prompter|>{prompt}\nRespond with a rating from 1 through 10 and nothing else.</s><|assistant|>"
-VOICELAB_TEMPLATE_V2 = "<s>[INST] <<SYS>> You are an objective instruction-following assistant. You must output a rating from 1-10 based on the user's criteria.<</SYS>>{prompt}\nRespond with a rating from 1 through 10 and nothing else.[/INST]\ngpt response </s>"
+OPENCHAT_TEMPLATE_V3 = "GPT4 User: {prompt}\nRespond with a rating from 1 through 10.<|end_of_turn|>GPT4 Assistant: Rating: "
+ORCA_TEMPLATE_V2 = "<|system|>You are an objective instruction-following assistant. You must output a rating from 1-10 based on the user's criteria.</s><|prompter|>{prompt}\nRespond with a rating from 1 through 10.</s><|assistant|>Rating: "
+VOICELAB_TEMPLATE_V2 = "<s>[INST] <<SYS>> You are an objective instruction-following assistant. You must output a rating from 1-10 based on the user's criteria.<</SYS>>{prompt}\nRespond with a rating from 1 through 10.[/INST]\ngpt response </s>Rating: "
 ################################
 LLM_TEMPLATES_V2 = {
     # 'ai21-j2-mid': CHAT_TEMPLATE_V2,
