@@ -13,7 +13,8 @@ L2_WIZARD_UNCENSORED = 'ehartford/WizardLM-1.0-Uncensored-Llama2-13b'
 L2_GUANACO_70B = 'TheBloke/llama-2-70b-Guanaco-QLoRA-fp16'
 FALCON_40B = 'tiiuae/falcon-40b'
 L2_ORCA_7B = 'circulus/Llama-2-7b-orca-v1'
-
+L2_VICUNA_7B = 'lmsys/vicuna-7b-v1.5'
+L2_HERMES_7B = 'NousResearch/Nous-Hermes-llama-2-7b'
 EMOJI_TO_INT = {
     r'\u0031\ufe0f\u20e3': 1,
     r'\u0033\ufe0f\u20e3': 3,
@@ -33,13 +34,16 @@ capture_emojis_pattern = r'|'.join(
 ALL_DIMENSIONS = ['authority', 'consensus',
                   'consistency', 'scarcity', 'unity', 'liking', 'reciprocity']
 
-ALL_LLMS = [BAICHUAN, L2_OPENCHAT, L2_OPENCHAT, L2_VOICELAB, L2]
+ALL_LLMS = [BAICHUAN, L2_OPENCHAT, L2_OPENCHAT,
+            L2_VOICELAB, L2, L2_VICUNA_7B, L2_HERMES_7B]
 
 LLM_ABBR_MAP = {
     'OpenAssistant/llama2-13b-orca-8k-3319': 'BAICHUAN',
     'openchat/openchat_v3.1': 'L2_OPENCHAT',
     'baichuan-inc/Baichuan-13B-Base': 'L2_ORCA',
-    'Voicelab/trurl-2-13b': 'L2_VOICELAB'
+    'Voicelab/trurl-2-13b': 'L2_VOICELAB',
+    L2_VICUNA_7B: 'L2_VICUNA_7B',
+    L2_HERMES_7B: 'L2_HERMES_7B'
 }
 
 DEFAULT_TEMPLATE_V2 = 'task:\n{prompt}\nYour rating: '
@@ -49,16 +53,15 @@ CHAT_TEMPLATE_V2 = 'task:\n{prompt}\nEND OF SAMPLE. Now, output the rating as an
 GUANACO_TEMPLATE_V2 = "task:\n{prompt}\n### Assistant: Rating: "
 VICUNA_TEMPLATE_V2 = 'User: {prompt} Assistant:Rating: ',
 VOICELAB_TEMPLATE = '<s>[INST]{prompt}\nRespond with a rating from 1 through 10 and nothing else.[/INST] gpt response </s> Rating: '
+FALCON_40B_TEMPLATE = "Task: {prompt}\nRespond with a rating from 1 through 10 and nothing else.\nRating: "
+WIZARD_UNCENSORED_TEMPLATE = "You are a helpful AI assistant.\n\nUSER: {prompt}\nRespond with a rating from 1 through 10 and nothing else.\nASSISTANT:\nRating: "
+GUANACO_70B_TEMPLATE = "### Human: {prompt}\nRespond with a rating from 1 through 10. ### Assistant:\nRating: "
 
 ###### CURRENT TEMPLATES #######
 OPENCHAT_TEMPLATE_V3 = "GPT4 User: {prompt}\nRespond with a rating from 1 through 10.<|end_of_turn|>GPT4 Assistant: Rating: "
 ORCA_TEMPLATE_V2 = "<|system|>You are an objective instruction-following assistant. You must output a rating from 1-10 based on the user's criteria.</s><|prompter|>{prompt}\nRespond with a rating from 1 through 10.</s><|assistant|>Rating: "
 VOICELAB_TEMPLATE_V2 = "<s>[INST] <<SYS>> You are an objective instruction-following assistant. You must output a rating from 1-10 based on the user's criteria.<</SYS>>{prompt}\nRespond with a rating from 1 through 10.[/INST]\ngpt response </s>Rating: "
 NOUS_HERMES_TEMPLATE = "### Instruction:\n{prompt}\nRespond with a rating from 1 through 10 and nothing else.\n\n### Response:\nRating: "
-WIZARD_UNCENSORED_TEMPLATE = "You are a helpful AI assistant.\n\nUSER: {prompt}\nRespond with a rating from 1 through 10 and nothing else.\nASSISTANT:\nRating: "
-GUANACO_70B_TEMPLATE = "### Human: {prompt}\nRespond with a rating from 1 through 10. ### Assistant:\nRating: "
-FALCON_40B_TEMPLATE = "Task: {prompt}\nRespond with a rating from 1 through 10 and nothing else.\nRating: "
-# ORCA_7B_TEMPLATE =
 ################################
 LLM_TEMPLATES_V2 = {
     # 'ai21-j2-mid': CHAT_TEMPLATE_V2,
@@ -82,5 +85,6 @@ LLM_TEMPLATES_V2 = {
     L2_HERMES: NOUS_HERMES_TEMPLATE,
     L2_GUANACO_70B: GUANACO_70B_TEMPLATE,
     FALCON_40B: FALCON_40B_TEMPLATE,
-    L2_ORCA_7B: ORCA_TEMPLATE_V2
+    L2_ORCA_7B: ORCA_TEMPLATE_V2,
+    L2_HERMES_7B: NOUS_HERMES_TEMPLATE
 }
