@@ -11,7 +11,8 @@ L2_OPEN_ORCA = 'Open-Orca/OpenOrcaxOpenChat-Preview2-13B'
 L2_HERMES = 'NousResearch/Nous-Hermes-Llama2-13b'
 L2_WIZARD_UNCENSORED = 'ehartford/WizardLM-1.0-Uncensored-Llama2-13b'
 L2_GUANACO_70B = 'TheBloke/llama-2-70b-Guanaco-QLoRA-fp16'
-
+FALCON_40B = 'tiiuae/falcon-40b'
+L2_ORCA_7B = 'circulus/Llama-2-7b-orca-v1'
 
 EMOJI_TO_INT = {
     r'\u0031\ufe0f\u20e3': 1,
@@ -56,6 +57,8 @@ VOICELAB_TEMPLATE_V2 = "<s>[INST] <<SYS>> You are an objective instruction-follo
 NOUS_HERMES_TEMPLATE = "### Instruction:\n{prompt}\nRespond with a rating from 1 through 10 and nothing else.\n\n### Response:\nRating: "
 WIZARD_UNCENSORED_TEMPLATE = "You are a helpful AI assistant.\n\nUSER: {prompt}\nRespond with a rating from 1 through 10 and nothing else.\nASSISTANT:\nRating: "
 GUANACO_70B_TEMPLATE = "### Human: {prompt}\nRespond with a rating from 1 through 10. ### Assistant:\nRating: "
+FALCON_40B_TEMPLATE = "Task: {prompt}\nRespond with a rating from 1 through 10 and nothing else.\nRating: "
+# ORCA_7B_TEMPLATE =
 ################################
 LLM_TEMPLATES_V2 = {
     # 'ai21-j2-mid': CHAT_TEMPLATE_V2,
@@ -77,5 +80,7 @@ LLM_TEMPLATES_V2 = {
     L2_VOICELAB: VOICELAB_TEMPLATE_V2,
     L2_WIZARD_UNCENSORED: WIZARD_UNCENSORED_TEMPLATE,
     L2_HERMES: NOUS_HERMES_TEMPLATE,
-    L2_GUANACO_70B: GUANACO_70B_TEMPLATE
+    L2_GUANACO_70B: GUANACO_70B_TEMPLATE,
+    FALCON_40B: FALCON_40B_TEMPLATE,
+    L2_ORCA_7B: ORCA_TEMPLATE_V2
 }
