@@ -9,6 +9,8 @@ L2 = 'TheBloke/Llama-2-13B-fp16'
 L2_ORCA_CIRCULUS = 'circulus/Llama-2-13b-orca-v1'
 L2_OPEN_ORCA = 'Open-Orca/OpenOrcaxOpenChat-Preview2-13B'
 L2_HERMES = 'NousResearch/Nous-Hermes-Llama2-13b'
+L2_WIZARD_UNCENSORED = 'ehartford/WizardLM-1.0-Uncensored-Llama2-13b'
+
 EMOJI_TO_INT = {
     r'\u0031\ufe0f\u20e3': 1,
     r'\u0033\ufe0f\u20e3': 3,
@@ -42,7 +44,6 @@ DEFAULT_TEMPLATE_V3 = 'Task:\n{prompt}Respond with a rating from 1 through 10 an
 DEFAULT_TEMPLATE_V4 = 'Task:\n{prompt}Respond with a rating from 1 through 10 and nothing else.\nRating:\n'
 CHAT_TEMPLATE_V2 = 'task:\n{prompt}\nEND OF SAMPLE. Now, output the rating as an integer from 1-10:\n'
 GUANACO_TEMPLATE_V2 = "task:\n{prompt}\n### Assistant: Rating: "
-HERMES_TEMPLATE_V1 = "### Instruction:\n{prompt}\nRespond with a rating from 1 through 10 and nothing else.\n### Response:\nRating: "
 VICUNA_TEMPLATE_V2 = 'User: {prompt} Assistant:Rating: ',
 VOICELAB_TEMPLATE = '<s>[INST]{prompt}\nRespond with a rating from 1 through 10 and nothing else.[/INST] gpt response </s> Rating: '
 
@@ -50,6 +51,8 @@ VOICELAB_TEMPLATE = '<s>[INST]{prompt}\nRespond with a rating from 1 through 10 
 OPENCHAT_TEMPLATE_V3 = "GPT4 User: {prompt}\nRespond with a rating from 1 through 10.<|end_of_turn|>GPT4 Assistant: Rating: "
 ORCA_TEMPLATE_V2 = "<|system|>You are an objective instruction-following assistant. You must output a rating from 1-10 based on the user's criteria.</s><|prompter|>{prompt}\nRespond with a rating from 1 through 10.</s><|assistant|>Rating: "
 VOICELAB_TEMPLATE_V2 = "<s>[INST] <<SYS>> You are an objective instruction-following assistant. You must output a rating from 1-10 based on the user's criteria.<</SYS>>{prompt}\nRespond with a rating from 1 through 10.[/INST]\ngpt response </s>Rating: "
+NOUS_HERMES_TEMPLATE = "### Instruction:\n{prompt}\nRespond with a rating from 1 through 10 and nothing else.\n\n### Response:\nRating: "
+WIZARD_UNCENSORED_TEMPLATE = "You are a helpful AI assistant.\n\nUSER: {prompt}\nRespond with a rating from 1 through 10 and nothing else.\nASSISTANT:\nRating: "
 ################################
 LLM_TEMPLATES_V2 = {
     # 'ai21-j2-mid': CHAT_TEMPLATE_V2,
@@ -68,5 +71,7 @@ LLM_TEMPLATES_V2 = {
     # L2_HERMES: HERMES_TEMPLATE_V1
     L2_ORCA: ORCA_TEMPLATE_V2,
     L2_OPENCHAT_V2: OPENCHAT_TEMPLATE_V3,
-    L2_VOICELAB: VOICELAB_TEMPLATE_V2
+    L2_VOICELAB: VOICELAB_TEMPLATE_V2,
+    L2_WIZARD_UNCENSORED: WIZARD_UNCENSORED_TEMPLATE,
+    L2_HERMES: NOUS_HERMES_TEMPLATE
 }
