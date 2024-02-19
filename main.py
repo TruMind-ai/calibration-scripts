@@ -2,8 +2,7 @@ from models import DimensionAsset
 import time
 from time import sleep
 import requests
-from utils import calculate_num_shard
-from utils.utils import get_database, extract_integer
+from utils.utils import get_database, extract_integer, calculate_num_shard
 from src.state_management import QueryBatch, WorkerState
 from vllm import LLM, SamplingParams
 from dotenv import load_dotenv
