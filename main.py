@@ -38,6 +38,8 @@ db = get_database("dimension_creation")
 #     return res.status_code == 200
 
 suffix = "Output only the integer associated with the stage, step or sub-step level such that only a single integer between 1-90 is outputted, where Stage 7 Step 1 is integer 1, and Stage 16 Step 6 is integer 90, and all stages and steps in between follow a sequential order from 1-90. For the output to this prompt, ONLY OUTPUT the integer associated to the stage and step/sub-step the experts have decided on."
+
+
 def format_queries_for_vllm(query_batch: QueryBatch):
     print("formatting queries for vllm...")
     qb = query_batch
@@ -74,7 +76,7 @@ def get_query_batch_from_controller() -> QueryBatch:
     if worker_state.llm == None:  # or worker_state.llm != qb.llm_name:
         # torch.cuda.empty_cache()
         worker_state.llm = LLM(model=qb.llm_name, trust_remote_code=True, download_dir='./models-weights',
-                               gpu_memory_utilization=0.98, swap_space=4,  max_num_batched_tokens=4000)
+                               gpu_memory_utilization=0.98)
     return qb
 
 
@@ -139,7 +141,7 @@ def main():
             do_one_batch()
         except Exception as e:
             print("ERROR - trying to re-do batch...")
-            # print(str(e))
+            print(str(e))
             # traceback.print_exc()
             # if not register_worker_with_orchestrator():
             # print("ERROR RE-REGISTERING")
