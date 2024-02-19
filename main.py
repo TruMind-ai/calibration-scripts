@@ -62,7 +62,7 @@ def format_queries_for_vllm(query_batch: QueryBatch):
 
 def get_query_batch_from_controller() -> QueryBatch:
     print("getting query batch from controller...")
-    url = f'{ORCHESTRATOR_URL}/calibrations/get-new-batch'
+    url = f'{ORCHESTRATOR_URL}/calibration/get-new-batch'
     headers = {
         'Content-Type': 'application/json',
     }
