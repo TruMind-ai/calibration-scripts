@@ -6,8 +6,6 @@ from pydantic import BaseModel, ConfigDict, Field
 from .utils import PyObjectId
 from typing import List, Dict, Any
 
-import pandas as pd
-
 
 class DimensionAssetType:
     PROMPT = "prompt"
@@ -31,14 +29,4 @@ class DimensionAsset(BaseModel):
         res = []
         for asset in dim_assets:
             res.append(DimensionAsset(**asset))
-        return res
-
-    def from_df(dim_assets: pd.DataFrame):
-        res = []
-        for _, row in dim_assets.iterrows():
-            exclude_from_rating = row["exclude_from_rating"] if row["exclude_from_rating"] else True
-            codes = json.loads(row["codes"].replace("'", '"'))
-            id = row["id"] if row["id"] else row["_id"]
-            res.append(DimensionAsset(_id=id, type=row["asset_type"], codes=codes, text=row["text"],
-                                      index=row["index"], exclude_from_rating=exclude_from_rating))
         return res
