@@ -17,7 +17,7 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 load_dotenv('.env-db')
 
-#TODO: create worker ID
+# TODO: create worker ID
 
 def handler(signum, frame):
     if queries:
@@ -120,8 +120,7 @@ if __name__ == "__main__":
     debugprint(f"Batch size: {batch_size}")
     batch_num = 0
 
-    prefixes = {prefix['prefix_index']
-        : prefix for prefix in list(db['prefixes'].find({}))}
+    prefixes = {prefix['prefix_index']                : prefix for prefix in list(db['prefixes'].find({}))}
     debugprint(f"Loaded {len(prefixes)} prefixes successfully")
 
     prompts = {}

@@ -1,3 +1,4 @@
+from models import DimensionAsset
 import time
 from time import sleep
 import requests
@@ -11,16 +12,17 @@ import json
 import traceback
 load_dotenv('.env-db')
 
+generic_suffix = "Output only the integer associated with the stage, step or sub-step level such that only a single integer between 1-90 is outputted, where Stage 7 Step 1 is integer 1, and Stage 16 Step 6 is integer 90, and all stages and steps in between follow a sequential order from 1-90. For the output to this prompt, ONLY OUTPUT the integer associated to the stage and step/sub-step the experts have decided on."
 
 # ORCHESTRATOR_URL=os.getenv('ORCHESTRATOR_URL')
 
 ORCHESTRATOR_URL = "http://20.228.162.220:8000"
 # instantiate worker info
-worker_info = WorkerInfo(worker_id=str(uuid.uuid1()),
-                         ip_address='', compute_units=1)
+# worker_info = WorkerInfo(worker_id=str(uuid.uuid1()),
+#                          ip_address='', compute_units=1)
 
 # initialize state
-worker_state = WorkerState(worker_info.worker_id)
+worker_state = WorkerState(worker_id="")
 
 # set sampling params
 worker_state.sampling_params = SamplingParams(temperature=1, max_tokens=3)
@@ -29,36 +31,36 @@ worker_state.sampling_params = SamplingParams(temperature=1, max_tokens=3)
 db = get_database()
 
 # initialize LLM templates
-LLM_TEMPLATES = LLM_TEMPLATES_V2
+# LLM_TEMPLATES = LLM_TEMPLATES_V2
 
 
-def register_worker_with_orchestrator() -> bool:
-    headers = {
-        'Content-Type': 'application/json',
-    }
-    data = json.dumps(vars(worker_info))
-    res = requests.post(
-        f'{ORCHESTRATOR_URL}/calibrations/register-worker', headers=headers, data=data)
-    return res.status_code == 200
+# def register_worker_with_orchestrator() -> bool:
+#     headers = {
+#         'Content-Type': 'application/json',
+#     }
+#     data = json.dumps(vars(worker_info))
+#     res = requests.post(
+#         f'{ORCHESTRATOR_URL}/calibrations/register-worker', headers=headers, data=data)
+#     return res.status_code == 200
 
 
 def format_queries_for_vllm(query_batch: QueryBatch):
     print("formatting queries for vllm...")
+    qb = query_batch
+    assets = DimensionAsset.from_list(list(db[f'{qb.dimension_id}/assets']))
+    assets_dict = {a.index: a for a in assets}
 
-    prefixes = {prefix['prefix_index']                : prefix for prefix in list(db[f'prefixes'].find({}))}
-    prompts = {prompt['prompt_index']: prompt for prompt in list(
-        db[f'core_prompts/{query_batch.dimension}'].find({}))}
-    samples = {sample['sample_index']: sample for sample in list(
-        db[f'samples/{query_batch.dimension}'].find({}))}
+    # prefixes = {prefix['prefix_index']: prefix for prefix in list(db[f'prefixes'].find({}))}
 
     prompt_dict = {}
-    for query in query_batch.query_list:
-        prefix = prefixes[query.prefix_index]['prefix']
-        prompt = prompts[query.prompt_index]['combined_prompt']
-        sample = samples[query.sample_index]['sample']
-        combined = f"{prefix}\n{prompt}\nSample:\n{sample}"
-        prompt_dict[LLM_TEMPLATES[query_batch.llm_name].format(
-            prompt=combined)] = query.id
+    for dim_rating in query_batch.query_list:
+        prefix = assets_dict[dim_rating.prefix_index]['text'] if dim_rating.prefix_index in assets_dict else ""
+        prompt = assets_dict[dim_rating.prompt_index]['text']
+        sample = assets_dict[dim_rating.sample_index]['text']
+        combined = f"{prefix}{prompt}\nSample:\n{sample}"
+        # prompt_dict[LLM_TEMPLATES[query_batch.llm_name].format(
+        # prompt=combined)] = query.id
+        prompt_dict[combined] = dim_rating.id
     print(len(prompt_dict), "queries in batch")
 
     return prompt_dict
@@ -66,19 +68,19 @@ def format_queries_for_vllm(query_batch: QueryBatch):
 
 def get_query_batch_from_controller() -> QueryBatch:
     print("getting query batch from controller...")
-    url = f'{ORCHESTRATOR_URL}/calibrations/get-new-batch/{worker_info.worker_id}'
+    url = f'{ORCHESTRATOR_URL}/calibrations/get-new-batch'
     headers = {
         'Content-Type': 'application/json',
     }
     res = requests.get(url, headers=headers)
     print(res)
     res = res.json()
-    qb = QueryBatch.from_dict(res)
+    qb = QueryBatch(**res)
     print(len(qb.query_list), "Queries in batch")
     if worker_state.llm == None:  # or worker_state.llm != qb.llm_name:
         # torch.cuda.empty_cache()
         worker_state.llm = LLM(model=qb.llm_name, trust_remote_code=True, download_dir='./models-weights',
-                               gpu_memory_utilization=0.98, swap_space=4, tensor_parallel_size=1,  max_num_batched_tokens=4000)
+                               gpu_memory_utilization=0.98, swap_space=4,  max_num_batched_tokens=4000)
     return qb
 
 
@@ -137,18 +139,17 @@ def do_one_batch() -> None:
 
 
 def main():
-    register_worker_with_orchestrator()
+    # register_worker_with_orchestrator()
     while True:
         try:
             do_one_batch()
         except Exception as e:
-
-            print("ERRORS - trying to re-register...")
-            print(str(e))
-            traceback.print_exc()
-            if not register_worker_with_orchestrator():
-                print("ERROR RE-REGISTERING")
-            print("error doing batch... sleeping for 30s")
+            print("ERROR - trying to re-do batch...")
+            # print(str(e))
+            # traceback.print_exc()
+            # if not register_worker_with_orchestrator():
+            # print("ERROR RE-REGISTERING")
+            # print("error doing batch... sleeping for 30s")
             sleep(30)
 
 
