@@ -7,7 +7,7 @@ from src.state_management import QueryBatch, WorkerState
 from vllm import LLM, SamplingParams
 from dotenv import load_dotenv
 import json
-load_dotenv('.env-db')
+load_dotenv()
 
 generic_suffix = "Output only the integer associated with the stage, step or sub-step level such that only a single integer between 1-90 is outputted, where Stage 7 Step 1 is integer 1, and Stage 16 Step 6 is integer 90, and all stages and steps in between follow a sequential order from 1-90. For the output to this prompt, ONLY OUTPUT the integer associated to the stage and step/sub-step the experts have decided on."
 
@@ -22,7 +22,7 @@ worker_state = WorkerState(worker_id="")
 worker_state.sampling_params = SamplingParams(temperature=1, max_tokens=3)
 
 # initialize database
-db = get_database()
+db = get_database("dimension_creation")
 
 # initialize LLM templates
 # LLM_TEMPLATES = LLM_TEMPLATES_V2
