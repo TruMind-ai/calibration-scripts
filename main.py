@@ -3,13 +3,10 @@ import time
 from time import sleep
 import requests
 from utils.utils import get_database, extract_integer
-from src.state_management import WorkerInfo, QueryBatch, WorkerState
+from src.state_management import QueryBatch, WorkerState
 from vllm import LLM, SamplingParams
-import uuid
-from src.constants import LLM_TEMPLATES_V2
 from dotenv import load_dotenv
 import json
-import traceback
 load_dotenv('.env-db')
 
 generic_suffix = "Output only the integer associated with the stage, step or sub-step level such that only a single integer between 1-90 is outputted, where Stage 7 Step 1 is integer 1, and Stage 16 Step 6 is integer 90, and all stages and steps in between follow a sequential order from 1-90. For the output to this prompt, ONLY OUTPUT the integer associated to the stage and step/sub-step the experts have decided on."
@@ -17,9 +14,6 @@ generic_suffix = "Output only the integer associated with the stage, step or sub
 # ORCHESTRATOR_URL=os.getenv('ORCHESTRATOR_URL')
 
 ORCHESTRATOR_URL = "http://20.228.162.220:8000"
-# instantiate worker info
-# worker_info = WorkerInfo(worker_id=str(uuid.uuid1()),
-#                          ip_address='', compute_units=1)
 
 # initialize state
 worker_state = WorkerState(worker_id="")
