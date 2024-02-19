@@ -37,7 +37,7 @@ db = get_database("dimension_creation")
 #         f'{ORCHESTRATOR_URL}/calibrations/register-worker', headers=headers, data=data)
 #     return res.status_code == 200
 
-
+suffix = "Output only the integer associated with the stage, step or sub-step level such that only a single integer between 1-90 is outputted, where Stage 7 Step 1 is integer 1, and Stage 16 Step 6 is integer 90, and all stages and steps in between follow a sequential order from 1-90. For the output to this prompt, ONLY OUTPUT the integer associated to the stage and step/sub-step the experts have decided on."
 def format_queries_for_vllm(query_batch: QueryBatch):
     print("formatting queries for vllm...")
     qb = query_batch
@@ -48,10 +48,10 @@ def format_queries_for_vllm(query_batch: QueryBatch):
 
     prompt_dict = {}
     for dim_rating in query_batch.query_list:
-        prefix = assets_dict[dim_rating.prefix_index]['text'] if dim_rating.prefix_index in assets_dict else ""
-        prompt = assets_dict[dim_rating.prompt_index]['text']
-        sample = assets_dict[dim_rating.sample_index]['text']
-        combined = f"{prefix}{prompt}\nSample:\n{sample}"
+        prefix = assets_dict[dim_rating.prefix_index].text if dim_rating.prefix_index in assets_dict else ""
+        prompt = assets_dict[dim_rating.prompt_index].text
+        sample = assets_dict[dim_rating.sample_index].text
+        combined = f"{prefix}{prompt}\nSample:\n{sample}{suffix}"
         # prompt_dict[LLM_TEMPLATES[query_batch.llm_name].format(
         # prompt=combined)] = query.id
         prompt_dict[combined] = dim_rating.id
