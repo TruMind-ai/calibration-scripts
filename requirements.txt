@@ -1,7 +1,6 @@
 pymongo==4.4.1
 python-dotenv==1.0.0
 pydantic==2.2.1
-vllm
+vllm==0.3.1
 tqdm
 requests
-ray
