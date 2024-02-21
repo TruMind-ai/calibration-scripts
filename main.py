@@ -75,7 +75,7 @@ def get_query_batch_from_controller() -> QueryBatch:
     print(len(qb.query_list), "Queries in batch")
     if worker_state.llm == None:  # or worker_state.llm != qb.llm_name:
         # torch.cuda.empty_cache()
-        worker_state.llm = LLM(model=qb.llm_name, trust_remote_code=True,  # download_dir='./models-weights',
+        worker_state.llm = LLM(model=qb.llm_name, trust_remote_code=True,  download_dir='/dev/shm/',
                                gpu_memory_utilization=0.98, tensor_parallel_size=calculate_num_shard(llm=qb.llm_name))
     return qb
 
