@@ -1,3 +1,4 @@
+import code
 from models import DimensionAsset
 import time
 from time import sleep
@@ -100,9 +101,11 @@ def upload_query_batch(query_batch: QueryBatch) -> bool:
     return res.status_code == 200
 
 
-def do_one_batch() -> None:
+def do_one_batch(num_max_queries=-1, debug=False) -> None:
     # get ratings from controller
     current_query_batch = get_query_batch_from_controller()
+    if num_max_queries > 0:
+        current_query_batch.query_list = current_query_batch.query_list[-num_max_queries:]
     batch_start = time.time()
     if not current_query_batch or not current_query_batch.query_list:
         print("No more queries to rate!!! Sleeping for 30 seconds")
@@ -140,7 +143,8 @@ def do_one_batch() -> None:
         else:
             query.latency = ((query.num_tries-1)*query.latency +
                              avg_query_time)/query.num_tries
-
+    if debug:
+        code.InteractiveConsole(locals=globals())
     # upload batch
     upload_query_batch(current_query_batch)
 
