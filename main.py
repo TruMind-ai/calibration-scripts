@@ -58,6 +58,13 @@ def format_queries_for_vllm(query_batch: QueryBatch):
         combined = f"{prefix}{prompt}\nSample:\n{sample}{suffix}"
         # prompt_dict[LLM_TEMPLATES[query_batch.llm_name].format(
         # prompt=combined)] = query.id
+        try:
+            combined = worker_state.llm.get_tokenizer().apply_chat_template(
+                conversation=[{"role": "user", "content": combined}], tokenize=False)
+        except:
+            print("Applying Chat template Failed... Using default template...")
+            combined = f"{combined}\n Integer:\n"
+
         prompt_dict[combined] = dim_rating.id
     print(len(prompt_dict), "queries in batch")
 
@@ -108,6 +115,7 @@ def do_one_batch() -> None:
     cur_prompts = list(cur_prompts_dict.keys())
     # call "generate" on the list
     ratings = {}
+
     outputs = worker_state.llm.generate(
         cur_prompts, worker_state.sampling_params, use_tqdm=True)
     for i, output in enumerate(outputs):
