@@ -38,7 +38,7 @@ db = get_database("dimension_creation")
 #         f'{ORCHESTRATOR_URL}/calibrations/register-worker', headers=headers, data=data)
 #     return res.status_code == 200
 
-suffix = "For the output to this prompt, ONLY OUTPUT AN INTEGER FROM 1-90 representing the stage and step/sub-step the experts have decided on. What is your Rating (1-90)?"
+suffix = "END OF SAMPLE. Output and integer from 1-90 representing the stage and step/sub-step the experts have decided on. Only output the integer, do not output anything else."
 
 
 def format_queries_for_vllm(query_batch: QueryBatch):
