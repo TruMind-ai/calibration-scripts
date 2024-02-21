@@ -88,7 +88,7 @@ def upload_query_batch(query_batch: QueryBatch) -> bool:
     headers = {
         'Content-Type': 'application/json',
     }
-    data = json.dumps(query_batch.to_dict())
+    data = json.dumps(query_batch.model_dump())
     res = requests.post(
         f"{ORCHESTRATOR_URL}/calibration/upload-queries", headers=headers, data=data)
     return res.status_code == 200
