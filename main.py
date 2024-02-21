@@ -20,7 +20,7 @@ worker_state = WorkerState(worker_id="")
 
 # set sampling params
 worker_state.sampling_params = SamplingParams(
-    temperature=1.4, max_tokens=5)
+    temperature=1.4, max_tokens=10)
 
 # initialize database
 db = get_database("dimension_creation")
