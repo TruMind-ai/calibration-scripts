@@ -19,7 +19,8 @@ ORCHESTRATOR_URL = "http://20.228.162.220:8000"
 worker_state = WorkerState(worker_id="")
 
 # set sampling params
-worker_state.sampling_params = SamplingParams(temperature=1, max_tokens=5)
+worker_state.sampling_params = SamplingParams(
+    temperature=1, max_tokens=4)
 
 # initialize database
 db = get_database("dimension_creation")
@@ -43,7 +44,8 @@ suffix = "Output only the integer associated with the stage, step or sub-step le
 def format_queries_for_vllm(query_batch: QueryBatch):
     print("formatting queries for vllm...")
     qb = query_batch
-    assets = DimensionAsset.from_list(list(db[f'{qb.dimension_id}/assets'].find({})))
+    assets = DimensionAsset.from_list(
+        list(db[f'{qb.dimension_id}/assets'].find({})))
     assets_dict = {a.index: a for a in assets}
 
     # prefixes = {prefix['prefix_index']: prefix for prefix in list(db[f'prefixes'].find({}))}
