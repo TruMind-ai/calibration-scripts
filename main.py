@@ -43,7 +43,7 @@ suffix = "Output only the integer associated with the stage, step or sub-step le
 def format_queries_for_vllm(query_batch: QueryBatch):
     print("formatting queries for vllm...")
     qb = query_batch
-    assets = DimensionAsset.from_list(list(db[f'{qb.dimension_id}/assets']))
+    assets = DimensionAsset.from_list(list(db[f'{qb.dimension_id}/assets'].find({})))
     assets_dict = {a.index: a for a in assets}
 
     # prefixes = {prefix['prefix_index']: prefix for prefix in list(db[f'prefixes'].find({}))}
