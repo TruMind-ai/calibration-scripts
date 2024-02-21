@@ -1,21 +1,39 @@
+
+from typing import List
 from pymongo.database import Database
 import os
 from pymongo import MongoClient
 import re
-from src.constants import *
+
+from models import DimensionAsset, QueryBatch
+from .constants import suffix, EMOJI_TO_INT, capture_emojis_pattern
+import requests
 
 
-def get_database(name: str = "dimension_creation") -> Database:
-    '''
-    This function returns associated MongoDB database 
-    for calibrations
-    '''
-    # Provide the mongodb atlas url to connect python to mongodb using pymongo
-    CONNECTION_STRING = os.getenv('CONNECTION_STRING')
-    # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
-    client = MongoClient(CONNECTION_STRING)
-    # return database
-    return client[name]
+def format_queries_for_vllm(query_batch: QueryBatch, assets: List[DimensionAsset], tokenizer):
+    print("formatting queries for vllm...")
+
+    assets_dict = {a.index: a for a in assets}
+
+    # prefixes = {prefix['prefix_index']: prefix for prefix in list(db[f'prefixes'].find({}))}
+
+    prompt_dict = {}
+    for dim_rating in query_batch.query_list:
+        prefix = assets_dict[dim_rating.prefix_index].text if dim_rating.prefix_index in assets_dict else ""
+        prompt = assets_dict[dim_rating.prompt_index].text
+        sample = assets_dict[dim_rating.sample_index].text
+        combined = f"{prefix}{prompt}\nSample:\n{sample}{suffix}"
+        try:
+            combined = tokenizer.apply_chat_template(
+                conversation=[{"role": "user", "content": combined}], tokenize=False)
+        except:
+            print("Applying Chat template Failed... Using default template...")
+            combined = f"{combined}\n Integer:\n"
+
+        prompt_dict[combined] = str(dim_rating.id)
+    print(len(prompt_dict), "queries in batch")
+
+    return prompt_dict
 
 
 def extract_integer(text: str):

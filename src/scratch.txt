@@ -1,1 +1,0 @@
-worker_id: str, ip_address: str = "", compute_units: int = 1

@@ -1,3 +1,19 @@
-from .main import do_one_batch
+from vllm import SamplingParams
+from dotenv import load_dotenv
+import json
 
-do_one_batch(10, debug=True)
+from worker.Worker import Worker
+load_dotenv()
+
+
+# ORCHESTRATOR_URL=os.getenv('ORCHESTRATOR_URL')
+
+
+def main():
+    worker = Worker(worker_id="", sampling_params=SamplingParams(
+        temperature=1.4, max_tokens=5))
+    worker.start_worker(10, True)
+
+
+if __name__ == '__main__':
+    main()
