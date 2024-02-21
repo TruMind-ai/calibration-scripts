@@ -138,6 +138,6 @@ for _, query in enumerate(current_query_batch.query_list):
     else:
         query.latency = ((query.num_tries-1)*query.latency +
                          avg_query_time)/query.num_tries
-code.InteractiveConsole(locals=globals).interact()
+code.InteractiveConsole(locals=globals()).interact()
 # upload batch
 # upload_query_batch(current_query_batch)
