@@ -99,53 +99,45 @@ def upload_query_batch(query_batch: QueryBatch) -> bool:
     return res.status_code == 200
 
 
-def do_one_batch() -> None:
-    # get ratings from controller
-    current_query_batch = get_query_batch_from_controller()
-    batch_start = time.time()
-    if not current_query_batch or not current_query_batch.query_list:
-        print("No more queries to rate!!! Sleeping for 30 seconds")
-        sleep(30)
-        return
-
-    current_query_batch.query_list = current_query_batch.query_list[:10]
-    # Format query in LLM prompt style
-    cur_prompts_dict = format_queries_for_vllm(current_query_batch)
-    cur_prompts = list(cur_prompts_dict.keys())
-    # call "generate" on the list
-    ratings = {}
-
-    outputs = worker_state.llm.generate(
-        cur_prompts, worker_state.sampling_params, use_tqdm=True)
-    for i, output in enumerate(outputs):
-        query_id = cur_prompts_dict[output.prompt]
-        ratings[query_id] = extract_integer(output.outputs[0].text)
-        print('output #', i, 'rating:', ratings[query_id])
-
-    print(f"Sample Ratings: {list(ratings.values())[-10:]}")
-
-    # update queries with ratings, collect timing stats
-    for _, query in enumerate(current_query_batch.query_list):
-        query.rating = -1
-        if query.id in ratings:
-            query.rating = ratings[query.id]
-        else:
-            print("Error: query id not in ratings!")
-        query.num_tries += 1
-        avg_query_time = (time.time()-batch_start) / \
-            len(current_query_batch.query_list)
-        if query.latency == -1:
-            query.latency = avg_query_time
-        else:
-            query.latency = ((query.num_tries-1)*query.latency +
-                             avg_query_time)/query.num_tries
-    # upload batch
-    # upload_query_batch(current_query_batch)
-
-def main():
-    do_one_batch()
-    code.InteractiveConsole(locals=globals()).interact()
+# get ratings from controller
+current_query_batch = get_query_batch_from_controller()
+batch_start = time.time()
+if not current_query_batch or not current_query_batch.query_list:
+    print("No more queries to rate!!! Sleeping for 30 seconds")
+    sleep(30)
 
 
-if __name__ == '__main__':
-    main()
+current_query_batch.query_list = current_query_batch.query_list[:10]
+# Format query in LLM prompt style
+cur_prompts_dict = format_queries_for_vllm(current_query_batch)
+cur_prompts = list(cur_prompts_dict.keys())
+# call "generate" on the list
+ratings = {}
+
+outputs = worker_state.llm.generate(
+    cur_prompts, worker_state.sampling_params, use_tqdm=True)
+for i, output in enumerate(outputs):
+    query_id = cur_prompts_dict[output.prompt]
+    ratings[query_id] = extract_integer(output.outputs[0].text)
+    print('output #', i, 'rating:', ratings[query_id])
+
+print(f"Sample Ratings: {list(ratings.values())[-10:]}")
+
+# update queries with ratings, collect timing stats
+for _, query in enumerate(current_query_batch.query_list):
+    query.rating = -1
+    if query.id in ratings:
+        query.rating = ratings[query.id]
+    else:
+        print("Error: query id not in ratings!")
+    query.num_tries += 1
+    avg_query_time = (time.time()-batch_start) / \
+        len(current_query_batch.query_list)
+    if query.latency == -1:
+        query.latency = avg_query_time
+    else:
+        query.latency = ((query.num_tries-1)*query.latency +
+                         avg_query_time)/query.num_tries
+code.InteractiveConsole(locals=globals).interact()
+# upload batch
+# upload_query_batch(current_query_batch)
