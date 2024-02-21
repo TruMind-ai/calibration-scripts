@@ -20,7 +20,7 @@ worker_state = WorkerState(worker_id="")
 
 # set sampling params
 worker_state.sampling_params = SamplingParams(
-    temperature=1, max_tokens=2)
+    temperature=1.4, max_tokens=5)
 
 # initialize database
 db = get_database("dimension_creation")
@@ -39,7 +39,6 @@ db = get_database("dimension_creation")
 #     return res.status_code == 200
 
 suffix = "END OF SAMPLE. Output only the integer associated with the stage, step or sub-step level such that only a single integer between 1-90 is outputted, where Stage 7 Step 1 is integer 1, and Stage 16 Step 6 is integer 90, and all stages and steps in between follow a sequential order from 1-90. Output an integer from 1-90 representing the stage and step/sub-step the experts have decided on. Only output the integer (1-90), do not output anything else."
-
 
 
 def format_queries_for_vllm(query_batch: QueryBatch):
