@@ -4,7 +4,7 @@ import json
 from time import sleep
 import time
 import requests
-from models import QueryBatch
+from models import DimensionAsset, QueryBatch
 from utils import calculate_num_shard
 from utils.completions import extract_integer, format_queries_for_vllm
 from utils.database import get_database
@@ -31,7 +31,7 @@ class Worker:
         res = res.json()
         qb = QueryBatch(**res)
         print(len(qb.query_list), "Queries in batch")
-        if self.llm == None:  # or worker.llm != qb.llm_name:
+        if not self.llm:  # or worker.llm != qb.llm_name:
             # torch.cuda.empty_cache()
             self.llm = LLM(model=qb.llm_name, trust_remote_code=True,  download_dir='/dev/shm/',
                            gpu_memory_utilization=0.95, tensor_parallel_size=calculate_num_shard(llm=qb.llm_name),
@@ -60,7 +60,11 @@ class Worker:
             return
 
         # Format query in LLM prompt style
-        cur_prompts_dict = format_queries_for_vllm(current_query_batch)
+        if not self.assets:
+            self.assets = DimensionAsset.from_list(
+                list(self.db[f'{current_query_batch.dimension_id}/assets'].find({})))
+        cur_prompts_dict = format_queries_for_vllm(
+            current_query_batch, self.assets, self.llm.get_tokenizer())
         cur_prompts = list(cur_prompts_dict.keys())
         # call "generate" on the list
         ratings = {}
