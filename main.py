@@ -8,12 +8,9 @@ load_dotenv()
 
 # ORCHESTRATOR_URL=os.getenv('ORCHESTRATOR_URL')
 
-
-
-
 def main():
     worker = Worker(worker_id="", sampling_params=SamplingParams(
-        temperature=1.4, max_tokens=5))
+        temperature=1.2, max_tokens=5))
     worker.start_worker()
 
 
