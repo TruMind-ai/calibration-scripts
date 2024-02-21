@@ -19,6 +19,7 @@ class Worker:
         self.sampling_params = sampling_params
         self.db = get_database("dimension_creation")
         self.orchestrator_url = "http://20.228.162.220:8000"
+        self.assets = []
 
     def get_query_batch_from_controller(self) -> QueryBatch:
         print("getting query batch from controller...")
