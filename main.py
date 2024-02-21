@@ -78,7 +78,8 @@ def get_query_batch_from_controller() -> QueryBatch:
     if worker_state.llm == None:  # or worker_state.llm != qb.llm_name:
         # torch.cuda.empty_cache()
         worker_state.llm = LLM(model=qb.llm_name, trust_remote_code=True,  download_dir='/dev/shm/',
-                               gpu_memory_utilization=0.98, tensor_parallel_size=calculate_num_shard(llm=qb.llm_name))
+                               gpu_memory_utilization=0.95, tensor_parallel_size=calculate_num_shard(llm=qb.llm_name),
+                               max_model_len=9000)
     return qb
 
 
