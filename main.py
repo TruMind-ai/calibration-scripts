@@ -38,7 +38,7 @@ db = get_database("dimension_creation")
 #         f'{ORCHESTRATOR_URL}/calibrations/register-worker', headers=headers, data=data)
 #     return res.status_code == 200
 
-suffix = "Output only the integer associated with the stage, step or sub-step level such that only a single integer between 1-90 is outputted, where Stage 7 Step 1 is integer 1, and Stage 16 Step 6 is integer 90, and all stages and steps in between follow a sequential order from 1-90. For the output to this prompt, ONLY OUTPUT the integer associated to the stage and step/sub-step the experts have decided on."
+suffix = "For the output to this prompt, ONLY OUTPUT AN INTEGER FROM 1-90 representing the stage and step/sub-step the experts have decided on. What is your Rating (1-90)?"
 
 
 def format_queries_for_vllm(query_batch: QueryBatch):
