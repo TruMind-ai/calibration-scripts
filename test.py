@@ -63,7 +63,7 @@ def format_queries_for_vllm(query_batch: QueryBatch):
             print("Applying Chat template Failed... Using default template...")
             combined = f"{combined}\n Integer:\n"
 
-        prompt_dict[combined] = dim_rating.id
+        prompt_dict[combined] = str(dim_rating.id)
     print(len(prompt_dict), "queries in batch")
 
     return prompt_dict
@@ -117,7 +117,7 @@ ratings = {}
 outputs = worker_state.llm.generate(
     cur_prompts, worker_state.sampling_params, use_tqdm=True)
 for i, output in enumerate(outputs):
-    query_id = cur_prompts_dict[output.prompt]
+    query_id = str(cur_prompts_dict[output.prompt])
     ratings[query_id] = extract_integer(output.outputs[0].text)
     print('output #', i, 'rating:', ratings[query_id])
 
@@ -126,8 +126,9 @@ print(f"Sample Ratings: {list(ratings.values())[-10:]}")
 # update queries with ratings, collect timing stats
 for _, query in enumerate(current_query_batch.query_list):
     query.rating = -1
-    if query.id in ratings:
-        query.rating = ratings[query.id]
+    query_id = str(query.id)
+    if query_id in ratings:
+        query.rating = ratings[query_id]
     else:
         print("Error: query id not in ratings!")
     query.num_tries += 1
