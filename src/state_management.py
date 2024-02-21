@@ -1,4 +1,4 @@
-# import vllm
+import vllm
 from typing import List, Dict, Any
 from models import DimensionRating
 from pydantic import BaseModel
@@ -28,19 +28,12 @@ class QueryBatch(BaseModel):
 #             "compute_units": self.compute_units
 #         }
 
-    # return json.dumps(self_dict)
+#         return json.dumps(self_dict)
 
-
-# class WorkerState:
-
-#     def __init__(self, worker_id: str, llm: vllm.LLM = None, sampling_params: vllm.SamplingParams = None) -> None:
-#         self.worker_id = worker_id
-#         self.llm = llm
-#         self.sampling_params = sampling_params
 
 class WorkerState:
 
-    def __init__(self, worker_id: str, llm = None, sampling_params = None) -> None:
+    def __init__(self, worker_id: str, llm: vllm.LLM = None, sampling_params: vllm.SamplingParams = None) -> None:
         self.worker_id = worker_id
         self.llm = llm
         self.sampling_params = sampling_params
