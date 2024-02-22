@@ -44,7 +44,7 @@ class Worker:
         headers = {
             'Content-Type': 'application/json',
         }
-        data = json.dumps(query_batch.model_dump())
+        data = query_batch.model_dump(by_alias=True)
         res = requests.post(
             f"{self.orchestrator_url}/calibration/upload-queries", headers=headers, data=data)
         return res.status_code == 200
