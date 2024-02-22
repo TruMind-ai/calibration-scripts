@@ -16,6 +16,7 @@ class Worker:
     def __init__(self, worker_id: str, llm: vllm.LLM = None, sampling_params: vllm.SamplingParams = None) -> None:
         self.worker_id = worker_id
         self.llm = llm
+        self.debug = False
         self.sampling_params = sampling_params
         self.db = get_database("dimension_creation")
         self.orchestrator_url = "http://20.228.162.220:8000"
@@ -44,12 +45,14 @@ class Worker:
         headers = {
             'Content-Type': 'application/json',
         }
-        data = query_batch.model_dump(by_alias=True)
+        data = query_batch.model_dump_json(by_alias=True)
+        if self.debug:
+            print(data)
         res = requests.post(
-            f"{self.orchestrator_url}/calibration/upload-queries", headers=headers, data=data)
+            f"{self.orchestrator_url}/calibration/upload-queries", headers=headers, json=data)
         return res.status_code == 200
 
-    def do_one_batch(self, num_max_queries=-1, debug=False) -> None:
+    def do_one_batch(self, num_max_queries=-1) -> None:
         # get ratings from controller
         current_query_batch = self.get_query_batch_from_controller()
         if num_max_queries > 0:
@@ -95,15 +98,16 @@ class Worker:
             else:
                 query.latency = ((query.num_tries-1)*query.latency +
                                  avg_query_time)/query.num_tries
-        if debug:
+        if self.debug:
             code.InteractiveConsole(locals=globals())
         # upload batch
         self.upload_query_batch(current_query_batch)
 
     def start_worker(self, num_max_queries=-1, debug=False):
+        self.debug = debug
         while True:
             try:
-                self.do_one_batch(num_max_queries=num_max_queries, debug=debug)
+                self.do_one_batch(num_max_queries=num_max_queries)
             except Exception as e:
                 print("ERROR - trying to re-do batch...")
                 print(str(e))
