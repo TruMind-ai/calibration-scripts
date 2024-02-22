@@ -106,8 +106,8 @@ class Worker:
                 self.do_one_batch(num_max_queries=num_max_queries, debug=debug)
             except Exception as e:
                 print("ERROR - trying to re-do batch...")
-                print(e.with_traceback())
                 print(str(e))
+                print(e)
                 # traceback.print_exc()
                 # if not register_worker_with_orchestrator():
                 # print("ERROR RE-REGISTERING")
