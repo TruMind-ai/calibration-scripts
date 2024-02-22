@@ -45,7 +45,7 @@ class Worker:
         headers = {
             'Content-Type': 'application/json',
         }
-        data = query_batch.model_dump_json(by_alias=True)
+        data = query_batch.model_dump(by_alias=True)
         if self.debug:
             print(data)
         res = requests.post(
