@@ -36,7 +36,7 @@ class Worker:
         if not self.llm:  # or worker.llm != qb.llm_name:
             # torch.cuda.empty_cache()
             self.llm = LLM(model=qb.llm_name, trust_remote_code=True,  download_dir='/dev/shm/',
-                           gpu_memory_utilization=0.95, tensor_parallel_size=calculate_num_shard(llm=qb.llm_name),
+                           gpu_memory_utilization=0.95, tensor_parallel_size=4,
                            max_model_len=8000)
         return qb
 
